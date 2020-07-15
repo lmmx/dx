@@ -64,7 +64,7 @@ def GET_book_metadata_pages(initialise_at=1, volumes=None, sort=True, dry_run=Fa
         volumes = series_dict.keys()
     volume_iterator = StrWrapIterator(volumes) # yield strings only
     if dry_run:
-        crawl_delay = 2
+        crawl_delay = 1
     else:
         crawl_delay = 20 # https://bookstore.ams.org/robots.txt --> Crawl-delay: 20
         session = requests.Session()
