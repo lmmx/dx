@@ -1,8 +1,11 @@
-from parse_topics import topics
+from .parse_topics import topics
+from ..data import dir_path as data_dir
 import requests
 import csv
 from time import sleep
 from sys import stderr
+
+__all__ = ["base_url", "StrWrapIterator", "DummyPage", "GET_book_metadata_pages"]
 
 base_url = "https://bookstore.ams.org/"
 
@@ -51,7 +54,7 @@ def GET_book_metadata_pages(initialise_at=1, volumes=None, sort=True, dry_run=Fa
     """
     series_suffix = "gsm"
     reprint_suffix = "r"
-    with open("book-series-number-listing.csv") as csvfile:
+    with open(data_dir / "book-series-number-listing.csv") as csvfile:
         reader = csv.reader(csvfile)
         series_dict = dict(reader)
     series_dict.pop("NaN") # Discard the 3 unusable entries
