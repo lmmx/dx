@@ -1,13 +1,12 @@
 from .parse_topics import topics
+from .url_utils import base_url
 from ..data import dir_path as data_dir
 import requests
 import csv
 from time import sleep
 from sys import stderr
 
-__all__ = ["base_url", "StrWrapIterator", "DummyPage", "GET_book_metadata_pages"]
-
-base_url = "https://bookstore.ams.org/"
+__all__ = ["StrWrapIterator", "DummyPage", "GET_book_metadata_pages"]
 
 class StrWrapIterator(object):
     "Wrap an integer iterator (or even a mix of int and str) as str, with no generator"
@@ -71,7 +70,6 @@ def GET_book_metadata_pages(initialise_at=1, volumes=None, sort=True, dry_run=Fa
     for k in volume_iterator:
         if int(k) < initialise_at:
             continue
-        # next_page = session.get(page_url)
         suffix_list = [series_suffix, k]
         # title-case `true`/`false` then `eval` as bool
         is_reprint = eval(series_dict.get(k).title())

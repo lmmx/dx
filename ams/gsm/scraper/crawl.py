@@ -1,5 +1,6 @@
 from .parse_topics import topics
-from .crawler import GET_book_metadata_pages, base_url
+from .crawler import GET_book_metadata_pages
+from .url_utils import base_url
 from sys import stderr
 
 __all__ = ["crawl"]
