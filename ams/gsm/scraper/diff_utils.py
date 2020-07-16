@@ -2,7 +2,7 @@ from .colours import colour_str
 
 __all__ = ["pprint_diff"]
 
-def pprint_diff(diff):
+def pprint_diff_comp(diff):
     pprintables = []
     for d in diff:
         if d.startswith("-"):

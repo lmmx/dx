@@ -5,16 +5,22 @@ from .pickle_utils import retrieve_pickle
 
 __all__ = ["diff_from_pickle", "diff_soup_pair"]
 
-def diff_from_pickle(pickle_filename, pickle_dir=None):
+def split_soups(soups):
+    split_soups = [s.prettify().splitlines() for s in soups]
+    return split_soups
+
+def diff_from_pickle(pickle_filename, pickle_dir=None, pprint=False):
     """
     Diff the `requests.Response` objects stored in a pickle.
     """
     unpickled = retrieve_pickle(pickle_filename, pickle_dir)
-    soups = [BS(r.content, "html.parser").prettify().splitlines() for r in unpickled]
+    soups = [BS(r.content, "html.parser") for r in unpickled]
+    line_soups = split_soups(soups)
     # do some zip magic
     # https://stackoverflow.com/questions/20693730/difflib-with-more-than-two-file-names
-    html_diff = diff_soup_pair(*soups[:2])
-    pprint_diff(html_diff)
+    html_diff = diff_soup_pair(*line_soups[:2])
+    if pprint:
+        pprint_diff(html_diff)
     return html_diff, soups[:2]
 
 def diff_soup_pair(s1, s2):
