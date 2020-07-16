@@ -1,6 +1,6 @@
 from .colours import colour_str
 
-__all__ = ["pprint_diff"]
+__all__ = ["pprint_diff_comp"]
 
 def pprint_diff_comp(diff):
     pprintables = []
