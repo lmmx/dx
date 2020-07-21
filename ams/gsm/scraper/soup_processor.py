@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup as BS
 import bs4
 from difflib import Differ
-from .diff_utils import pprint_diff_comp
+#from .diff_utils import pprint_diff_comp
 from .pickle_utils import retrieve_pickle
 from operator import eq, ne
 import re
