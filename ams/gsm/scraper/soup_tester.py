@@ -1,6 +1,6 @@
 from bs4.element import NavigableString as NS
 from .soup_processor import review_node_tags, tags
-from .soup_structure import ContentSection, TextInfoSection
+from .soup_structure import AMSGSMInfoPage
 from pydoc import pager
 
 def listpager(a_list):
@@ -46,12 +46,7 @@ def soup_descendant_counts(soup):
     return soup_tag_counts
 
 nodes1, nodes2, s1, s2 = review_node_tags() # loads pickle `gsm_1-3.p` (vol. 1 to 3)
-s1bounds = s1.select_one("div.productPage div.bounds")
-# contains a `div#content` (archival metadata) and `div.t-stacked.col-md-9` (text info)
-s1c = s1bounds.select_one("div#content div.bounds")
-parsed_metadata = ContentSection(s1c)
-s1t = s1bounds.select_one("div.t-stacked.col-md-9 div.bounds")
-parsed_text_info = TextInfoSection(s1t)
+s1_parsed = AMSGSMInfoPage(s1)
 
 #review_soup_navstrings(s1)
 #s1_tag_counts = soup_descendant_counts(s1)

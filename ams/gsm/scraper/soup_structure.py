@@ -1,14 +1,15 @@
 from dx.share import add_props_to_ns, add_classprops_to_ns, props_as_dict
 from bs4 import BeautifulSoup
+from .soup_postprocessing import process_reviews, process_metadoc, process_toc
 
 class HTMLSection(object):
     def __init__(self, html_tag):
         self.root = html_tag
-        self._set_up_props()
+        self._set_up_props() # parse the root then annul the root once parsed
 
     # Populate namespace of class definition with properties and class properties
     add_props_to_ns(["root"])
-    add_classprops_to_ns(["root_selector"])
+    add_classprops_to_ns(["root_subselector"])
 
     def _attr_tups_from_prop_dict(self):
         attr_tuples = []
@@ -22,6 +23,7 @@ class HTMLSection(object):
         if hasattr(self, "_prop_dict"):
             # Set up properties on a subclass calling `super().__init__`
             self._set_attrs(self._attr_tups_from_prop_dict())
+            self.root = None # annul the root now its content is parsed into attribs
 
     def _set_attrs(self, attr_tuple_list):
         for (attr, val) in attr_tuple_list:
@@ -35,7 +37,7 @@ class HTMLSection(object):
 
 
 class ContentSection(HTMLSection):
-    root_selector = "div.productPage div.bounds"
+    root_subselector = "div#content div.bounds"
 
     _prop_dict = {
         "cover_image": ("img#ProductImage", False),
@@ -44,36 +46,25 @@ class ContentSection(HTMLSection):
 
 
 class TextInfoSection(HTMLSection):
-    root_selector = "div.t-stacked.col-md-9 div.bounds"
+    root_subselector = "div.t-stacked.col-md-9 div.bounds"
     
-    @staticmethod
-    def _process_reviews(reviews):
-        return reviews
-
-    @staticmethod
-    def _process_metadoc(metadoc):
-        return metadoc
-
-    @staticmethod
-    def _process_toc(toc):
-        return toc
-
     _prop_dict = {
         "title": ("div.productHeader h1", False),
         "authors": ("span.productAuthors em", True),
         "abstract": ("div.title-abstract div.abstract p", False),
         "readership": ("h4.vertArrow + p", False),
-        "reviews": ("div.reviewText div.bounds", False, _process_reviews),
-        "metadoc": ("div.doctoc div.bounds div", True, _process_metadoc),
-        "toc_info": ("div.doctoc div.bounds ul", False, _process_toc)
+        "reviews": ("div.reviewText div.bounds", False, process_reviews),
+        "metadoc": ("div.doctoc div.bounds div", True, process_metadoc),
+        "toc_info": ("div.doctoc div.bounds ul", False, process_toc)
     }
 
 
-class AMSGSMInfoPage(BeautifulSoup):
+class AMSGSMInfoPage(object):
     def __init__(self, soup):
-        # Process then discard the soup
-        self.metadata = ContentSection.from_soup(soup)
-        self.text_info = TextInfoSection.from_soup(soup)
+        root_selector = "div.productPage div.bounds" # All info is below this
+        subsoup = soup.select_one(root_selector)
+        self.metadata = ContentSection(subsoup)
+        self.text_info = TextInfoSection(subsoup)
 
     _properties = ["metadata", "text_info"]
     add_props_to_ns(_properties)

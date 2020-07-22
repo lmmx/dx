@@ -2,7 +2,7 @@ from inspect import currentframe
 
 __all__ = ["add_props_to_ns", "add_classprops_to_ns", "classproperty", "props_as_dict"]
 
-def prop_getter_setter(property_name, prefix="_", read_only=False):
+def prop_getsetdel(property_name, prefix="_", read_only=False, deletable=False):
     internal_attr = prefix + property_name
     def prop_getter(internal_attr):
         def getter_func(self):
@@ -14,39 +14,57 @@ def prop_getter_setter(property_name, prefix="_", read_only=False):
             setattr(self, internal_attr, val)
         return setter_func
 
+    def prop_deleter(internal_attr):
+        def deleter_func(self):
+            delattr(self, internal_attr)
+        return deleter_func
+
     pget = prop_getter(internal_attr)
     pset = prop_setter(internal_attr)
+    pdel = prop_deleter(internal_attr)
     if read_only:
-        return tuple([pget])
+        if deletable:
+            return pget, None, pdel # Leave pset `None`
+        else:
+            return tuple([pget])
     else:
-        return pget, pset
+        if deletable:
+            return pget, pset, pdel # Full house !
+        else:
+            return pget, pset
 
-def property_maker(property_name, prefix="_", read_only=False):
-    return property(*prop_getter_setter(property_name, prefix, read_only))
+def property_maker(property_name, prefix="_", read_only=False, deletable=False):
+    pgsd = prop_getsetdel(property_name, prefix, read_only, deletable)
+    return property(*pgsd)
 
-def classproperty_maker(property_name, prefix="_", read_only=False):
-    return classproperty(*prop_getter_setter(property_name, prefix, read_only))
+def classproperty_maker(property_name, prefix="_", read_only=False, deletable=False):
+    pgsd = prop_getsetdel(property_name, prefix, read_only, deletable)
+    return classproperty(*pgsd)
 
-def props_as_dict(prop_names, prefix="_", read_only=False):
-    return dict([(p, property_maker(p, prefix, read_only)) for p in prop_names])
+def props_as_dict(prop_names, prefix="_", read_only=False, deletable=False):
+    l = [(p, property_maker(p, prefix, read_only, deletable)) for p in prop_names]
+    return dict(l)
 
-def classprops_as_dict(prop_names, prefix="_", read_only=False):
-    return dict([(p, classproperty_maker(p, prefix, read_only)) for p in prop_names])
+def classprops_as_dict(prop_names, prefix="_", read_only=False, deletable=False):
+    l = [(p, classproperty_maker(p, prefix, read_only, deletable)) for p in prop_names]
+    return dict(l)
 
-def add_props_to_ns(property_list, prefix="_", read_only=False):
+def add_props_to_ns(property_list, prefix="_", read_only=False, deletable=False):
     try:
         frame = currentframe()
         callers_ns = frame.f_back.f_locals
-        callers_ns.update(props_as_dict(property_list, prefix, read_only))
+        d = props_as_dict(property_list, prefix, read_only, deletable)
+        callers_ns.update(d)
     finally:
         del frame
     return
 
-def add_classprops_to_ns(property_list, prefix="_", read_only=False):
+def add_classprops_to_ns(property_list, prefix="_", read_only=False, deletable=False):
     try:
         frame = currentframe()
         callers_ns = frame.f_back.f_locals
-        callers_ns.update(classprops_as_dict(property_list, prefix, read_only))
+        d = classprops_as_dict(property_list, prefix, read_only, deletable)
+        callers_ns.update(d)
     finally:
         del frame
     return
