@@ -61,6 +61,13 @@ class TocEntry(object):
         self.pageno = None if pageno is None else pageno.text
         self.is_free = li_item.select_one("span.t-toc-range-free") is not None
 
+    def __repr__(self):
+        s = f"{self.title!r} --- {self.logical_pageno}"
+        if self.logical_pageno != self.pageno:
+            s += f" ({self.pageno})"
+        if self.is_free:
+            s += " (free)"
+        return s
 
 def get_TocEntry_or_TocEntries(li_item):
     li_ch = li_item.findChild()

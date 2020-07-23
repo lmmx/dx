@@ -1,6 +1,7 @@
 from dx.share import add_props_to_ns, add_classprops_to_ns, props_as_dict
 from bs4 import BeautifulSoup
-from .soup_postprocessing import process_reviews, process_metadoc, TocInfo
+from .soup_postprocessing import process_reviews, process_metadoc
+from .toc_processing import TocInfo
 
 class HTMLSection(object):
     def __init__(self, html_tag):
