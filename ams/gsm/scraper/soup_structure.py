@@ -1,6 +1,6 @@
 from dx.share import add_props_to_ns, add_classprops_to_ns, props_as_dict
 from bs4 import BeautifulSoup
-from .soup_postprocessing import process_reviews, process_metadoc, process_toc
+from .soup_postprocessing import process_reviews, process_metadoc, TocInfo
 
 class HTMLSection(object):
     def __init__(self, html_tag):
@@ -14,7 +14,7 @@ class HTMLSection(object):
     def _attr_tups_from_prop_dict(self):
         attr_tuples = []
         for prop_key, (css_sel, sel_all, *callback) in self._prop_dict.items():
-            callback = callback if callable(callback) else lambda x: x
+            callback = callback[0] if any(map(callable, callback)) else lambda x: x
             sel_func = self._selAll if sel_all else self._sel
             attr_tuples.extend([(prop_key, callback(sel_func(css_sel)))])
         return attr_tuples
@@ -55,7 +55,7 @@ class TextInfoSection(HTMLSection):
         "readership": ("h4.vertArrow + p", False),
         "reviews": ("div.reviewText div.bounds", False, process_reviews),
         "metadoc": ("div.doctoc div.bounds div", True, process_metadoc),
-        "toc_info": ("div.doctoc div.bounds ul", False, process_toc)
+        "toc_info": ("div.doctoc div.bounds ul", False, TocInfo)
     }
 
 
