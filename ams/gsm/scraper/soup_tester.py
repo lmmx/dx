@@ -46,7 +46,7 @@ def soup_descendant_counts(soup):
     return soup_tag_counts
 
 nodes1, nodes2, s1, s2 = review_node_tags() # loads pickle `gsm_1-3.p` (vol. 1 to 3)
-s1_parsed = AMSGSMInfoPage(s1)
+s1_parsed, s2_parsed = AMSGSMInfoPage(s1), AMSGSMInfoPage(s2)
 
 #review_soup_navstrings(s1)
 #s1_tag_counts = soup_descendant_counts(s1)
