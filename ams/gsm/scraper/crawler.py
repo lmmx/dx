@@ -8,7 +8,7 @@ from sys import stderr
 
 __all__ = ["StrWrapIterator", "DummyPage", "GET_book_metadata_pages"]
 
-class StrWrapIterator(object):
+class StrWrapIterator:
     "Wrap an integer iterator (or even a mix of int and str) as str, with no generator"
     def __init__(self, values):
         self.values = list(values)
@@ -37,7 +37,7 @@ class StrWrapIterator(object):
     def remaining_iterations(self):
         return self.stop - self.start
 
-class DummyPage(object):
+class DummyPage:
     def __init__(self, url, ok=True):
         self.url = url
         self.ok = ok

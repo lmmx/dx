@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from .soup_postprocessing import process_reviews, process_metadoc
 from .toc_processing import TocInfo
 
-class HTMLSection(object):
+class HTMLSection:
     def __init__(self, html_tag):
         self.root = html_tag
         self._set_up_props() # parse the root then annul the root once parsed
@@ -60,7 +60,7 @@ class TextInfoSection(HTMLSection):
     }
 
 
-class AMSGSMInfoPage(object):
+class AMSGSMInfoPage:
     def __init__(self, soup):
         root_selector = "div.productPage div.bounds" # All info is below this
         subsoup = soup.select_one(root_selector)
