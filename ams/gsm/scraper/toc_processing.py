@@ -1,7 +1,7 @@
-import re
-from dx.share import add_props_to_ns, add_classprops_to_ns
+from dx.share import add_props_to_ns
+from .symbol_formatting import RegexMatchable, SymbolGroup
 
-class TocChapNum(object):
+class TocChapNum(RegexMatchable):
     def __init__(self, ch_num_substr):
         self.substr = ch_num_substr # Store input string (ToC entry title) in a property
         # Complain if the (sub)chapter numbering regex doesn't match the title string
@@ -9,12 +9,7 @@ class TocChapNum(object):
         self.numeric = self.get_numbering_tuple(self.substr)
 
     add_props_to_ns(["numeric", "substr"])
-    _re = r"^(Chapter )?(\d+\.)+" # accessed via the read-only `TocChapNum.re` property
-    add_classprops_to_ns(["re"], read_only=True)
-
-    @classmethod
-    def match(cls, target_str):
-        return re.match(cls.re, target_str)
+    _re = r"^(Chapter )?(\d+\.)+" # set inherited read-only `RegexMatchable.re` property
 
     @classmethod
     def get_numbering_tuple(cls, target_str):
@@ -28,22 +23,18 @@ class TocChapNum(object):
         else:
             return m
 
-    @classmethod
-    def from_title_str(cls, title_str):
-        """
-        Class constructor: return a `TocChapNum` instance if a valid number in
-        `title_str` else return `None` if the class regex doesn't match it.
-        """
-        m = cls.match(title_str)
-        return m if m is None else cls(m[0])
-
 class TocTitle(str):
     def __init__(self, t):
         self.title_text = t
-        ch_num_str = TocChapNum.from_title_str(t)
+        ch_num_str = TocChapNum.from_target_str(t)
         self.ch_num = ch_num_str
         title_postnum = None if self.ch_num is None else t[len(self.ch_num.substr):]
         self.ch_title_postnum = title_postnum
+        if self.ch_title_postnum is not None:
+            ch_symbol_substrings = SymbolGroup.from_target_str(self.ch_title_postnum)
+        else:
+            ch_symbol_substrings = []
+        self.symbol_groups = ch_symbol_substrings
         
     def __repr__(self):
         if self.ch_num is None:
@@ -51,7 +42,7 @@ class TocTitle(str):
         else:
             return f"({self.ch_num.substr}){self.ch_title_postnum}"
 
-class TocEntry(object):
+class TocEntry:
     def __init__(self, li_item):
         title = next(li_item.select_one("span.t-toc-title").stripped_strings)
         self.title = TocTitle(title)
@@ -86,6 +77,6 @@ class TocEntries(list):
     def has_distinct_pagenums(self):
         return any([e.pageno != e.logical_pageno for e in self])
 
-class TocInfo(object):
+class TocInfo:
     def __init__(self, toc_ul):
         self.toc_entries = TocEntries(toc_ul.findChildren("li", recursive=False))
