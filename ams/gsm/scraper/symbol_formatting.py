@@ -70,10 +70,10 @@ class ParsedFormula:
     def parse_from_string(self, string):
         root_node = string.split()
         self.root = root_node
-        if string == "(A[sub(2)])[sup(⊥)]":
-            self.parsed = parse_formula_tree(string)
-        else:
-            self.parsed = None # lol
+        #if string == "(A[sub(2)])[sup(⊥)]":
+        self.parsed = parse_formula_tree(string)
+        #else:
+        #    self.parsed = None # lol
 
     add_props_to_ns(["root"])
 
@@ -119,8 +119,8 @@ def parse_formula_tree(formula_str):
             p_split_processed.append(x)
     open_index = -1
     split_index_path = [] # Keep a record of the 'path' into the split so far
-    pane_list = []
-    pane_split_list = []
+    inner_list = []
+    split_list = []
     # A clopenable is an opener to-be-popped along with its associated closing opener
     # e.g. in `(A[sub(2)])[sup(⊥)]`, one of the splits is `)[` in which `)` remains
     # 'clopen' while the open `[` opener reads until its `]` closer. Once the `[`
@@ -130,14 +130,16 @@ def parse_formula_tree(formula_str):
     clopenables = []
     clopen_dict = {}
     print(p_split_processed)
-    for p in p_split_processed:
+    for p_i, p in enumerate(p_split_processed):
         print(f"{split_index_path=}")
         opening_h, opening_v = [p.endswith(x) for x in ("(", "[")]
         closing_h, closing_v = [p.startswith(x) for x in (")", "]")]
-        if closing_v or closing_h:
+        opening = opening_h or opening_v
+        closing = closing_h or closing_v
+        if closing:
             split_closer = p[0]
             p = p[p.find(split_closer)+1:] # `lstrip(split_closer)` but more carefully
-            if not (opening_h or opening_v):
+            if not opening:
                 popped_index = split_index_path.pop()
                 if popped_index in clopen_dict:
                     # Pop the associated clopen index which has been kept 'waiting'
@@ -150,24 +152,20 @@ def parse_formula_tree(formula_str):
                 # so as to tie its closure to that of the associated closer
                 clopenables.append(split_index_path[-1])
         #######################
-        if opening_v or opening_h:
+        if opening:
             split_opener = p[-1]
-            # the last 0 comma-separated values describe the new pane split, omit them
+            # the last 0 comma-separated values describe the new split, omit them
             p = p[:p.rfind(split_opener)] # `rstrip(split_opener)` but more carefully
-            panes_csv = [p]
-        pane_it = range(len(panes_csv))  # iterator to take 1 CSV at a time
-        pane_descs = map(lambda i: panes_csv[i : (i + 1)], pane_it)
         if len(split_index_path) > 0:
             current_split_i = split_index_path[-1]
         else:
-            # This only happens if there are no splits i.e. window only has one pane
+            # This only happens if there are no splits i.e. window only has one inner
             current_split_i = None
-        for pane_desc_1_tuple in pane_descs:
-            pane_info = ",".join(pane_desc_1_tuple)
-            pane = Pane(pane_info, parent_split_index=current_split_i)
-            pane_list.append(pane)
-        if opening_v or opening_h:
-            # Increment the split index for the new PaneSplit being opened
+        if not (opening or closing):
+            inner = InnerTerm(p, parent_split_index=current_split_i)
+            inner_list.append(inner)
+        elif opening:
+            # Increment the split index for the new Split being opened
             open_index += 1
             if clopenables:
                 clopen_index = clopenables.pop()
@@ -177,21 +175,20 @@ def parse_formula_tree(formula_str):
             else:
                 parent_split_index = None
             split_index_path.append(open_index)
-            split_desc_tuple = p.split(",")
-            pane_split_info = ",".join(split_desc_tuple)
-            ps = Split(pane_split_info, open_index, parent_split_index)
-            pane_split_list.append(ps)
+            ps = Split(p, open_index, parent_split_index)
+            split_list.append(ps)
     print(f"---> {split_index_path=}")
-    pane_tree = Tree(pane_split_list, pane_list)
-    return pane_tree
+    assert split_index_path == [], ValueError(f"Failed to traverse {split_index_path=}")
+    tree = FormulaTree(split_list, inner_list)
+    return tree
 
-class Pane:
+class InnerTerm:
     def __init__(self, info, parent_split_index):
         self.info = info
         self.parent_split_index = parent_split_index
 
     def __repr__(self):
-        return f"Pane: < {self.info=} ~ #{self.parent_split_index=} >"
+        return f"InnerTerm: < {self.info=} ~ #{self.parent_split_index=} >"
 
 class Split:
     def __init__(self, info, open_index, split_index):
@@ -202,12 +199,18 @@ class Split:
     def __repr__(self):
         return f"Split: < {self.info=} ~ {self.open_index=} ~ #{self.split_index=} >"
 
-class Tree:
-    def __init__(self, splits, panes):
+class FormulaTree:
+    def __init__(self, splits, inners):
         self.splits = splits
-        self.panes = panes
+        self.inners = inners
 
     def __repr__(self):
         split_reprs = "\n".join([f"{s!r}" for s in self.splits])
-        panes_reprs = "\n".join([f"{p!r}" for p in self.panes])
-        return f"{split_reprs}\n\n{panes_reprs}"
+        inners_reprs = "\n".join([f"{p!r}" for p in self.inners])
+        return f"{split_reprs}\n\n{inners_reprs}"
+
+    # TODO: parse the tree in such a way that an `[`-opener's preceder element is the
+    # subject of the `sub`/`sup` inside the `[]` clause object, and also that the
+    # 'clopening' aspect will permit multiple such `[]` clause objects to be associated
+    # to a single subject. E.g. in `(A[sub(2)])[sup(⊥)]`, `A` is the subject of both
+    # `sub` and `sup` clause objects (with different inner terms: `2` and `⊥`).

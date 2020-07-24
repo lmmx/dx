@@ -30,4 +30,8 @@ mm = [g.matched for g in t.symbol_groups]
 g1, g2 = t.symbol_groups
 ms1, ms2 = [g.formula.string for g in t.symbol_groups]
 p1, p2 = [g.formula.parsed for g in t.symbol_groups]
-print(f"{p2.parsed=}")
+print("\n\n\n")
+print(f"{ms1=}")
+print(f"p1.parsed:\n{p1.parsed}")
+print(f"{ms2=}")
+print(f"p2.parsed:\n{p2.parsed}")
