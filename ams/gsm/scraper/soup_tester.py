@@ -23,3 +23,11 @@ s2_parsed = AMSGSMInfoPage(s2)
 
 s1_toc_entries = s1_parsed.text_info.toc_info.toc_entries
 s2_toc_entries = s2_parsed.text_info.toc_info.toc_entries
+
+e = s2_toc_entries[33]
+t = e.title
+mm = [g.matched for g in t.symbol_groups]
+g1, g2 = t.symbol_groups
+ms1, ms2 = [g.formula.string for g in t.symbol_groups]
+p1, p2 = [g.formula.parsed for g in t.symbol_groups]
+print(f"{p2.parsed=}")
