@@ -1,8 +1,8 @@
 from dx.share import add_props_to_ns, add_classprops_to_ns, props_as_dict
 from bs4 import BeautifulSoup
-from .soup_postprocessing import process_reviews
 from .toc_processing import TocInfo
 from .metadoc_processing import MetaDoc
+from .review_processing import Reviews
 
 class HTMLSection:
     def __init__(self, html_tag):
@@ -55,7 +55,7 @@ class TextInfoSection(HTMLSection):
         "authors": ("span.productAuthors em", True),
         "abstract": ("div.title-abstract div.abstract p", False),
         "readership": ("h4.vertArrow + p", False),
-        "reviews": ("div.reviewText div.bounds", False, process_reviews),
+        "reviews": ("div.reviewText div.bounds", False, Reviews),
         "metadoc": ("div.doctoc div.bounds div", True, MetaDoc),
         "toc_info": ("div.doctoc div.bounds ul", False, TocInfo)
     }

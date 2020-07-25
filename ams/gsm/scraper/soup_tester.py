@@ -33,5 +33,5 @@ s2_toc_entries = s2_parsed.text_info.toc_info.toc_entries
 
 md1 = s1_parsed.text_info.metadoc
 md2 = s2_parsed.text_info.metadoc
-md1e = md1.entries
-md2e = md2.entries
+md1e = md1._entries
+md2e = md2._entries
