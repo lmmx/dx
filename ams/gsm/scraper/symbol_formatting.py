@@ -201,16 +201,62 @@ class Split:
 
 class FormulaTree:
     def __init__(self, splits, inners):
-        self.splits = splits
-        self.inners = inners
+        self._splits = splits
+        self._inners = inners
+        self._statement = self.as_statement()
 
     def __repr__(self):
         split_reprs = "\n".join([f"{s!r}" for s in self.splits])
         inners_reprs = "\n".join([f"{p!r}" for p in self.inners])
         return f"{split_reprs}\n\n{inners_reprs}"
 
+    add_props_to_ns(["splits", "inners", "statement"], read_only=True)
+    
     # TODO: parse the tree in such a way that an `[`-opener's preceder element is the
     # subject of the `sub`/`sup` inside the `[]` clause object, and also that the
     # 'clopening' aspect will permit multiple such `[]` clause objects to be associated
-    # to a single subject. E.g. in `(A[sub(2)])[sup(⊥)]`, `A` is the subject of both
-    # `sub` and `sup` clause objects (with different inner terms: `2` and `⊥`).
+    # to a single subject. E.g. in `(A[sub(5)])[sup(⊥)]`, `A` is the subject of both
+    # `sub` and `sup` clause objects (with different inner terms: `5` and `⊥`).
+
+    # e.g. a simple example with one inner term and two splits:
+    # 'A[sub(2)]'
+    #
+    # Split: < self.info='A' ~ self.open_index=0 ~ #self.split_index=None >
+    # Split: < self.info='sub' ~ self.open_index=1 ~ #self.split_index=0 >
+    # InnerTerm: < self.info='2' ~ #self.parent_split_index=1 >
+    #
+    # e.g. a less simple example with two inner terms and five splits:
+    # '(A[sub(5)])[sup(⊥)]'
+    #
+    # Split: < self.info='' ~ self.open_index=0 ~ #self.split_index=None >
+    # Split: < self.info='A' ~ self.open_index=1 ~ #self.split_index=0 >
+    # Split: < self.info='sub' ~ self.open_index=2 ~ #self.split_index=1 >
+    # Split: < self.info='' ~ self.open_index=3 ~ #self.split_index=0 >
+    # Split: < self.info='sup' ~ self.open_index=4 ~ #self.split_index=3 >
+    # InnerTerm: < self.info='5' ~ #self.parent_split_index=2 >
+    # InnerTerm: < self.info='⊥' ~ #self.parent_split_index=4 >
+
+    def as_statement(self):
+        statement_subjects = {} # Store each subject term as index of unique Split obj
+        for inner in self.inners:
+            # e.g. '(A[sub(5)])[sup(⊥)]' --> first: `inner='5'`
+            parent_split_i = inner.parent_split_index # --> 2
+            parent_split = self.splits[parent_split_i] # --> 3rd split or 0-index 2nd
+            caller_command = parent_split.info # --> `Split.info='sub'`
+            caller_split_i = parent_split.split_index # --> `Split.split_index=1`
+            caller_subject = self.splits[caller_split_i] # --> 2nd split/0-index 1st
+            caller_subject_name = caller_subject.info # --> `Split.info='A'`
+            if caller_subject_name == "": # e.g. for `inner='⊥'` in example above
+                if caller_split_i is None:
+                    raise ValueError(f"{caller_command}'s subject is unknown")
+                else:
+                    # `clopen_i` is equivalent to `clopen_dict.get(caller_split_i)`
+                    clopen_i = self.splits[caller_split_i].split_index # e.g. 3 --> 0
+                    caller_split_i = clopen_i + 1 # inside linked bracket
+                    caller_redirect = self.splits[caller_split_i]
+                    caller_subject_name = caller_redirect.info # --> 'A' is clopen name
+            # Now know `caller_subject` to which `inner` is applied by `caller_command`
+            command_object = (caller_command, inner)
+            statement_subjects.setdefault(caller_split_i, []) # subject index in splits
+            statement_subjects.get(caller_split_i).append(command_object)
+        return statement_subjects
