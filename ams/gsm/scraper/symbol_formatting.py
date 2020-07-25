@@ -61,21 +61,7 @@ class Formula:
         self.parsed = self.parse() # Turn into a parsed format
 
     def parse(self):
-        return ParsedFormula(self.string)
-
-class ParsedFormula:
-    def __init__(self, string):
-        self.parse_from_string(string) # set up root
-
-    def parse_from_string(self, string):
-        root_node = string.split()
-        self.root = root_node
-        #if string == "(A[sub(2)])[sup(⊥)]":
-        self.parsed = parse_formula_tree(string)
-        #else:
-        #    self.parsed = None # lol
-
-    add_props_to_ns(["root"])
+        return parse_formula_tree(self.string)
 
 def closer_for(bracket):
     if bracket == "(":
@@ -129,9 +115,7 @@ def parse_formula_tree(formula_str):
     # I.e. a clopenable is the 'waiting area' until becoming simply clopen.
     clopenables = []
     clopen_dict = {}
-    print(p_split_processed)
     for p_i, p in enumerate(p_split_processed):
-        print(f"{split_index_path=}")
         opening_h, opening_v = [p.endswith(x) for x in ("(", "[")]
         closing_h, closing_v = [p.startswith(x) for x in (")", "]")]
         opening = opening_h or opening_v
@@ -177,7 +161,6 @@ def parse_formula_tree(formula_str):
             split_index_path.append(open_index)
             ps = Split(p, open_index, parent_split_index)
             split_list.append(ps)
-    print(f"---> {split_index_path=}")
     assert split_index_path == [], ValueError(f"Failed to traverse {split_index_path=}")
     tree = FormulaTree(split_list, inner_list)
     return tree
@@ -203,7 +186,7 @@ class FormulaTree:
     def __init__(self, splits, inners):
         self._splits = splits
         self._inners = inners
-        self._statement = self.as_statement()
+        self._statement = self.as_statement() # dict keyed by Split index of subjects
 
     def __repr__(self):
         split_reprs = "\n".join([f"{s!r}" for s in self.splits])
@@ -256,7 +239,7 @@ class FormulaTree:
                     caller_redirect = self.splits[caller_split_i]
                     caller_subject_name = caller_redirect.info # --> 'A' is clopen name
             # Now know `caller_subject` to which `inner` is applied by `caller_command`
-            command_object = (caller_command, inner)
+            command_object = (caller_command, inner.info)
             statement_subjects.setdefault(caller_split_i, []) # subject index in splits
             statement_subjects.get(caller_split_i).append(command_object)
         return statement_subjects

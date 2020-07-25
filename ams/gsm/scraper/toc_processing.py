@@ -34,7 +34,7 @@ class TocTitle(str):
             ch_symbol_substrings = SymbolGroup.from_target_str(self.ch_title_postnum)
         else:
             ch_symbol_substrings = []
-        self.symbol_groups = ch_symbol_substrings
+        self.symbol_groups = ch_symbol_substrings # `.formula.parsed.statement`
         
     def __repr__(self):
         if self.ch_num is None:

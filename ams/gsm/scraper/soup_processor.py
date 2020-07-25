@@ -42,7 +42,7 @@ def review_node_tags():
         for n in s.children:
             t = type(n)
             if t == bs4.element.Tag:
-                print(n.name)
+                print(f"{n.name=}")
                 nodes.append(n)
             elif t == bs4.element.NavigableString:
                 # Discard these newline strings
