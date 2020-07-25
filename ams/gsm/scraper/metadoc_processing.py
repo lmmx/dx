@@ -1,4 +1,5 @@
 from dx.share import add_props_to_ns
+from .process_topics import Topic
 
 def as_bool(bool_str):
     assert bool_str in ["true", "false"], ValueError(f"Got non-bool: {bool_str}")
@@ -35,6 +36,10 @@ def strip_multi_value(parent_tag):
     "Strip the text of multiple `.t-listitem`-selected `span` tags"
     return strip_text(parent_tag.select('span[class*="t-value-"]'))
 
+def sxg_subject_callback(parent_tag):
+    processed = strip_multi_listitem(parent_tag)
+    return [Topic(p) for p in processed]
+
 metadoc_callbacks = {
     "authors": strip_multi_listitem,
     # what happens when one author doesn't have an affiliation but another does?
@@ -48,7 +53,7 @@ metadoc_callbacks = {
     "mscprimary": strip_multi_listitem,
     "mscsecondary": strip_multi_listitem, # (optional)
     "appliedmath": uni_value_bool,
-    "subject": strip_multi_listitem, # see `.parse_topics.py`
+    "subject": sxg_subject_callback, # Topic class using topics from `parse_topics.py`
     "printprice1": strip_uni_value
 }
 
