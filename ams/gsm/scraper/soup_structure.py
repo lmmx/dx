@@ -37,13 +37,20 @@ class HTMLSection:
     def _selAll(self, css_selector):
         return self.root.select(css_selector)
 
+def cover_image_src(img_tag):
+    src = img_tag.attrs.get("src")
+    return src[:src.rfind("?")]
+
+text_lambda = lambda tag: tag.text
+text_lambda_rm_nl = lambda tag: tag.text.strip("\n").replace("\n", " ")
 
 class ContentSection(HTMLSection):
     root_subselector = "div#content div.bounds"
 
+    # Turns out this bibInfo is all stored in `metadoc` so commented it out
     _prop_dict = {
-        "cover_image": ("img#ProductImage", False),
-        "bib_info_print_and_elec": ("p.bibInfo", True),
+        "cover_image": ("img#ProductImage", False, cover_image_src),
+        # "bib_info_print_and_elec": ("p.bibInfo", True),
     }
 
 
@@ -51,10 +58,10 @@ class TextInfoSection(HTMLSection):
     root_subselector = "div.t-stacked.col-md-9 div.bounds"
     
     _prop_dict = {
-        "title": ("div.productHeader h1", False),
-        "authors": ("span.productAuthors em", True),
-        "abstract": ("div.title-abstract div.abstract p", False),
-        "readership": ("h4.vertArrow + p", False),
+        "title": ("div.productHeader h1", False, text_lambda),
+        # "authors": ("span.productAuthors em", True), # this is in metadoc
+        "abstract": ("div.title-abstract div.abstract p", False, text_lambda_rm_nl),
+        "readership": ("h4.vertArrow + p", False, text_lambda_rm_nl),
         "reviews": ("div.reviewText div.bounds", False, Reviews),
         "metadoc": ("div.doctoc div.bounds div", True, MetaDoc),
         "toc_info": ("div.doctoc div.bounds ul", False, TocInfo)
@@ -65,8 +72,8 @@ class AMSGSMInfoPage:
     def __init__(self, soup):
         root_selector = "div.productPage div.bounds" # All info is below this
         subsoup = soup.select_one(root_selector)
-        self.metadata = ContentSection(subsoup)
-        self.text_info = TextInfoSection(subsoup)
+        self.content = ContentSection(subsoup)
+        self.metadata = TextInfoSection(subsoup)
 
-    _properties = ["metadata", "text_info"]
+    _properties = ["content", "metadata"]
     add_props_to_ns(_properties)

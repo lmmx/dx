@@ -21,8 +21,8 @@ nodes1, nodes2, s1, s2 = review_node_tags() # loads pickle `gsm_1-3.p` (vol. 1 t
 s1_parsed = AMSGSMInfoPage(s1) 
 s2_parsed = AMSGSMInfoPage(s2)
 
-s1_toc_entries = s1_parsed.text_info.toc_info.toc_entries
-s2_toc_entries = s2_parsed.text_info.toc_info.toc_entries
+s1_toc_entries = s1_parsed.metadata.toc_info.toc_entries
+s2_toc_entries = s2_parsed.metadata.toc_info.toc_entries
 
 #e = s2_toc_entries[33]
 #t = e.title
@@ -31,7 +31,7 @@ s2_toc_entries = s2_parsed.text_info.toc_info.toc_entries
 #ms1, ms2 = [g.formula.string for g in t.symbol_groups]
 #p1, p2 = [g.formula.parsed for g in t.symbol_groups]
 
-md1 = s1_parsed.text_info.metadoc
-md2 = s2_parsed.text_info.metadoc
+md1 = s1_parsed.metadata.metadoc
+md2 = s2_parsed.metadata.metadoc
 md1e = md1._entries
 md2e = md2._entries

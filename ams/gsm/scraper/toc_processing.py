@@ -15,7 +15,10 @@ class TocChapNum(RegexMatchable):
     def get_numbering_tuple(cls, target_str):
         m = cls.match(target_str)
         if m:
-            num_group = m.groups()[1]
+            mg_ch, mg_num = m.groups()
+            num_group = m.group()
+            if mg_ch:
+                num_group = num_group[len(mg_ch):] # left-strip the chapter substring
             num_tup = tuple(n for n in num_group.split(".") if n)
             num_check = all(map(str.isnumeric, num_tup))
             assert num_check, ValueError(f"Non-numeric chapter numbering: {num_tup}")
