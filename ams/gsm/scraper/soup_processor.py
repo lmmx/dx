@@ -19,20 +19,19 @@ def tags(soup, names=False):
     else:
         return tt
 
-# e.g.:
-# html_diff, (s1, s2) = dx.ams.gsm.scraper.diff_from_pickle("gsm_1-3.p")
 def diff_from_pickle(pickle_filename, pickle_dir=None, pprint=False):
-    """
-    Diff the `requests.Response` objects stored in a pickle.
-    """
     unpickled = retrieve_pickle(pickle_filename, pickle_dir)
-    soups = [BS(r.content, "html5lib") for r in unpickled]
+    soups = [soup_from_response(r) for r in unpickled]
     line_soups = split_soups(soups)
     # do some zip magic
     # https://stackoverflow.com/questions/20693730/difflib-with-more-than-two-file-names
     # html_diff = diff_paircomp(*line_soups[:2])
     html_diff = None
     return html_diff, soups
+
+def soup_from_response(response):
+    soup = BS(response.content, "html5lib")
+    return soup
 
 def review_node_tags():
     _, (s1, s2, s3) = diff_from_pickle("gsm_1-3.p")
@@ -53,7 +52,7 @@ def review_node_tags():
             else:
                 # In testing there were no other types
                 continue
-    return nodes1, nodes2, s1, s2
+    return nodes1, nodes2, s1, s2, s3
 
 def diff_paircomp(s1, s2):
     html_differ = Differ()

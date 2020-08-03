@@ -1,5 +1,6 @@
 import re
 from dx.share import add_props_to_ns, add_classprops_to_ns
+from .soup_postprocessing import listpager
 
 class RegexMatchable:
     add_classprops_to_ns(["re"], read_only=True)
@@ -49,10 +50,9 @@ class RegexMultiMatchable(RegexMatchable):
 
 class SymbolGroup(RegexMultiMatchable):
     def __init__(self, val):
-        self.matched = val
-        self.formula = Formula(self.matched.group())
+        self.formula = Formula(val.group())
 
-    _re = r"\S+\[su[b|p]\(+[^\]]+?\)\]"
+    _re = r"\S+\[su[b|p]\(+[^\]]+?\)\]\)?"
     add_props_to_ns(["matched", "formula"])
 
 class Formula:
@@ -161,6 +161,8 @@ def parse_formula_tree(formula_str):
             split_index_path.append(open_index)
             ps = Split(p, open_index, parent_split_index)
             split_list.append(ps)
+    #if split_index_path != []:
+    #    listpager([p_split_processed])
     assert split_index_path == [], ValueError(f"Failed to traverse {split_index_path=}")
     tree = FormulaTree(split_list, inner_list)
     return tree

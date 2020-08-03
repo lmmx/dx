@@ -1,5 +1,6 @@
 from .parse_topics import topics
 from .url_utils import base_url
+from .time_utils import StopWatch
 from ..data import dir_path as data_dir
 import requests
 import csv
@@ -14,6 +15,7 @@ class StrWrapIterator:
         self.values = list(values)
         self.start = 0
         self.stop = len(self.values)
+        self.timer = None # Only create timer using yield value after first iteration
         return
 
     def __iter__(self):
@@ -36,6 +38,19 @@ class StrWrapIterator:
     @property
     def remaining_iterations(self):
         return self.stop - self.start
+
+    @property
+    def timer(self):
+        return self._timer
+
+    @timer.setter
+    def timer(self, stopwatch):
+        self._timer = stopwatch # use a StopWatch
+
+    def pause(self):
+        if self.timer:
+            self.timer.wait()
+        return
 
 class DummyPage:
     def __init__(self, url, ok=True):
@@ -63,7 +78,7 @@ def GET_book_metadata_pages(initialise_at=1, volumes=None, sort=True, dry_run=Fa
         volumes = series_dict.keys()
     volume_iterator = StrWrapIterator(volumes) # yield strings only
     if dry_run:
-        crawl_delay = 1
+        crawl_delay = 0.1
     else:
         crawl_delay = 20 # https://bookstore.ams.org/robots.txt --> Crawl-delay: 20
         session = requests.Session()
@@ -78,9 +93,16 @@ def GET_book_metadata_pages(initialise_at=1, volumes=None, sort=True, dry_run=Fa
         page_url = base_url + "-".join(suffix_list) + "/"
         if dry_run:
             dummy_page = DummyPage(page_url)
-            yield dummy_page
+            yielding = dummy_page
         else:
             retrieved_page = session.get(page_url)
-            yield retrieved_page
+            yielding = retrieved_page
         if volume_iterator.remaining_iterations > 0:
-            sleep(crawl_delay) # Delay after each crawl, obeying robots.txt
+            # Set the timer before the next iteration
+            volume_iterator.timer = StopWatch(crawl_delay)
+        else:
+            volume_iterator.timer = None
+        yield yielding
+        # Then at the next iteration, wait for however long is left on the timer
+        if volume_iterator.timer:
+            volume_iterator.timer.wait() # Delay after each crawl, obeying robots.txt

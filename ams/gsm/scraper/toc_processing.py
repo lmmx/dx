@@ -1,5 +1,7 @@
 from dx.share import add_props_to_ns
 from .symbol_formatting import RegexMatchable, SymbolGroup
+from .soup_postprocessing import listpager
+from traceback import print_tb
 
 class TocChapNum(RegexMatchable):
     def __init__(self, ch_num_substr):
@@ -34,7 +36,12 @@ class TocTitle(str):
         title_postnum = None if self.ch_num is None else t[len(self.ch_num.substr):]
         self.ch_title_postnum = title_postnum
         if self.ch_title_postnum is not None:
-            ch_symbol_substrings = SymbolGroup.from_target_str(self.ch_title_postnum)
+            try:
+                t_str = self.ch_title_postnum
+                ch_symbol_substrings = SymbolGroup.from_target_str(t_str)
+            except Exception as e:
+                # Don't raise, just store exception instead of the SymbolGroup object
+                ch_symbol_substrings = e
         else:
             ch_symbol_substrings = []
         self.symbol_groups = ch_symbol_substrings # `.formula.parsed.statement`
@@ -65,6 +72,8 @@ class TocEntry:
 
 def get_TocEntry_or_TocEntries(li_item):
     li_ch = li_item.findChild()
+    if li_ch is None:
+        listpager(li_item) # DEBUGGING: print out the li item with no child `ul` element
     if li_ch.name == "ul":
         entry_list = [TocEntry(l) for l in li_ch.findChildren("li", recursive=False)]
     else:
@@ -74,7 +83,12 @@ def get_TocEntry_or_TocEntries(li_item):
 class TocEntries(list):
     def __init__(self, li_list):
         for li in li_list:
-            self.extend(get_TocEntry_or_TocEntries(li))
+            try:
+                self.extend(get_TocEntry_or_TocEntries(li))
+            except Exception as e:
+                listpager(li)
+                listpager(li_list)
+                print_tb(e.__traceback__)
 
     @property
     def has_distinct_pagenums(self):

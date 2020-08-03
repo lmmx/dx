@@ -39,10 +39,20 @@ class HTMLSection:
 
 def cover_image_src(img_tag):
     src = img_tag.attrs.get("src")
-    return src[:src.rfind("?")]
+    return src[:src.find("?")]
 
 text_lambda = lambda tag: tag.text
-text_lambda_rm_nl = lambda tag: tag.text.strip("\n").replace("\n", " ")
+
+def toc_info_wrapper(arg):
+    if arg is None:
+        return None
+    return TocInfo(arg)
+
+def rm_nl_nullable(tag):
+    if tag:
+        return tag.text.strip("\n").replace("\n", " ")
+    else:
+        return None
 
 class ContentSection(HTMLSection):
     root_subselector = "div#content div.bounds"
@@ -53,18 +63,17 @@ class ContentSection(HTMLSection):
         # "bib_info_print_and_elec": ("p.bibInfo", True),
     }
 
-
 class TextInfoSection(HTMLSection):
     root_subselector = "div.t-stacked.col-md-9 div.bounds"
     
     _prop_dict = {
         "title": ("div.productHeader h1", False, text_lambda),
         # "authors": ("span.productAuthors em", True), # this is in metadoc
-        "abstract": ("div.title-abstract div.abstract p", False, text_lambda_rm_nl),
-        "readership": ("h4.vertArrow + p", False, text_lambda_rm_nl),
+        "abstract": ("div.title-abstract div.abstract p", False, rm_nl_nullable),
+        "readership": ("h4.vertArrow + p", False, rm_nl_nullable),
         "reviews": ("div.reviewText div.bounds", False, Reviews),
         "metadoc": ("div.doctoc div.bounds div", True, MetaDoc),
-        "toc_info": ("div.doctoc div.bounds ul", False, TocInfo)
+        "toc_info": ("div.doctoc div.bounds > ul", False, toc_info_wrapper)
     }
 
 
