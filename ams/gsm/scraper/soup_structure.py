@@ -84,5 +84,38 @@ class AMSGSMInfoPage:
         self.content = ContentSection(subsoup)
         self.metadata = TextInfoSection(subsoup)
 
+    def _df_repr(self, as_dict=False):
+        """
+        Returns a dict built from the name tree of properties, including
+        a recursive step down into any properties whose values are instances
+        implementing the `_df_repr` interface themselves (i.e. providing the
+        subtree of further sub-properties), which can be merged to obtain a
+        single panel of data (suitable for constructing a single DataFrame).
+        """
+        # Store all properties in top-level dict i.e. columns of a single DataFrame
+        df_dict = {}
+        for p in self._properties:
+            self_prop_val = getattr(self, p)
+            # Coerce prop_dict to keys by taking it as a list
+            p_prop_names = list(getattr(self_prop_val, "_prop_dict"))
+            for subprop_name in p_prop_names:
+                self_subprop_val = getattr(self_prop_val, subprop_name)
+                if hasattr(self_subprop_val, "_df_repr"):
+                    # Recurse!
+                    subprops_entry_dict = self_subprop_val._df_repr(as_dict=True)
+                else:
+                    subprops_entry_dict = {subprop_name: [self_subprop_val]}
+                df_dict.update(subprops_entry_dict)
+        # Sort the keys before returning
+        df_dict = dict(sorted(df_dict.items()))
+        if as_dict:
+            # Sort the keys upon return
+            return df_dict
+        else:
+            # Import late else it adds start lag to every module implementing _df_repr
+            from pandas import DataFrame 
+            df = DataFrame.from_dict(df_dict)
+            return df
+
     _properties = ["content", "metadata"]
     add_props_to_ns(_properties)

@@ -87,3 +87,29 @@ class MetaDoc:
         for k, v in zip(entry_names, [e.value for e in entries]):
             setattr(self, k, v)
         self._entries = entries
+
+    def _df_repr(self, as_dict=False):
+        """
+        Returns a dict built from the name tree of properties, including
+        a recursive step down into any properties whose values are instances
+        implementing the `_df_repr` interface themselves (i.e. providing the
+        subtree of further sub-properties), which can be merged to obtain a
+        single panel of data (suitable for constructing a single DataFrame).
+        """
+        # Store all properties in top-level dict i.e. columns of a single DataFrame
+        df_dict = {}
+        for p in self._meta_types:
+            self_prop_val = getattr(self, p)
+            if hasattr(self_prop_val, "_df_repr"):
+                # Recurse!
+                props_entry_dict = self_prop_val._df_repr(as_dict=True)
+            else:
+                props_entry_dict = {p: [self_prop_val]}
+            df_dict.update(props_entry_dict)
+        if as_dict:
+            return df_dict # Used in recursive object flattening for AMSGSMInfoPage
+        else:
+            # Import late else it adds start lag to every module implementing _df_repr
+            from pandas import DataFrame 
+            df = DataFrame.from_dict(df_dict)
+            return df

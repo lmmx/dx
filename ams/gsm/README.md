@@ -121,9 +121,156 @@ decided I don't care about] is stored in a `AMSGSMInfoPage` object (see `soup_st
         `SymbolGroup.formula.parsed.statement` and the original substring in
         `SymbolGroup.formula.string`) which can easily [later] be used to create a LaTeX symbol format.
 
-## TBD: to be developed
+## Parsing
 
-- Run `crawl.py` without `dry_run=True` after setting up some sort of `pickle` or HTML file writing
+- [x] Run `crawl.py` without `dry_run=True` after setting up some sort of `pickle` or HTML file writing
   - Preferable to store [even temporarily] as the full crawl takes half an hour with the required delay
-- After downloading the pages, categorise each volume the page describes, using the `topics` dict
+- [x] After downloading the pages, categorise each volume the page describes, using the `topics` dict
   imported from `parse_topics.py`
+
+The pages are all parsed (see the `reparse` function in `crawler`⠶`reparser.py`), and stored as a
+pickle (`store`⠶`gsm-1-208_responses_and_parsings.p`). The helper function `responses_and_reparsed`
+(also in `reparser.py`) will load the variables stored in this pickle (`responses` and `reparsed`).
+
+```sh
+python -ic "import dx; from dx.ams.gsm.scraper.reparser import responses_and_reparsed"
+```
+⇣
+```py
+>>> pages, parsed_pages = responses_and_reparsed()
+>>> parsed_pages[0]
+<dx.ams.gsm.scraper.soup_structure.AMSGSMInfoPage object at 0x7f6635203c10>
+>>>
+```
+
+## Analysis
+
+Now the fun part!
+
+Many simple questions can now be answered using the variable `reparsed` which is a list of
+`AMSGSMPageInfo` objects.
+
+```py
+import pandas as pd
+volumes = [p.metadata.metadoc.volume for p in parsed_pages]
+titles = [p.metadata.title for p in parsed_pages]
+subjects = [p.metadata.metadoc.subject for p in parsed_pages]
+col_labels = ["volume", "title", "subjects"]
+df = pd.DataFrame(zip(volumes, titles, subjects), columns=col_labels)
+df
+```
+⇣
+```STDOUT
+      volume                                              title                                           subjects
+0          1          The General Topology of Dynamical Systems        [GT (Geometry and Topology), AN (Analysis)]
+1          2                             Combinatorial Rigidity      [DM (Discrete Mathematics and Combinatorics)]
+2          3                   An Introduction to Gröbner Bases  [DM (Discrete Mathematics and Combinatorics), ...
+3          4  The Integrals of Lebesgue, Denjoy, Perron, and...                                    [AN (Analysis)]
+4          5              Algebraic Curves and Riemann Surfaces  [AA (Algebra and Algebraic Geometry), GT (Geom...
+..       ...                                                ...                                                ...
+202      204                 Hochschild Cohomology for Algebras              [AA (Algebra and Algebraic Geometry)]
+203      205       Invitation to Partial Differential Equations                      [DE (Differential Equations)]
+204      206                          Extrinsic Geometric Flows                       [GT (Geometry and Topology)]
+205      207  Organized Collapse: An Introduction to Discret...  [GT (Geometry and Topology), AA (Algebra and A...
+206      208  Geometry and Topology of Manifolds: Surfaces a...                       [GT (Geometry and Topology)]
+
+[207 rows x 3 columns]
+```
+
+E.g. we can now see a list of all books in the discrete maths and combinatorics section:
+
+```py
+df.loc[df.subjects.apply(lambda row: any(s.code == "DM" for s in row))]
+```
+⇣
+```STDOUT
+      volume                                              title                                           subjects
+1          2                             Combinatorial Rigidity      [DM (Discrete Mathematics and Combinatorics)]
+2          3                   An Introduction to Gröbner Bases  [DM (Discrete Mathematics and Combinatorics), ...
+53        54                              A Course in Convexity  [DM (Discrete Mathematics and Combinatorics), ...
+88        89                          A Course on the Web Graph      [DM (Discrete Mathematics and Combinatorics)]
+101      103                 Configurations of Points and Lines  [DM (Discrete Mathematics and Combinatorics), ...
+144      146                          Combinatorial Game Theory  [AP (Applications), DM (Discrete Mathematics a...
+162      164      Expansion in Finite Simple Groups of Lie Type  [AA (Algebra and Algebraic Geometry), DM (Disc...
+170      172             Combinatorics and Random Matrix Theory  [PR (Probability and Statistics), DM (Discrete...
+193      195  Combinatorial Reciprocity Theorems: An Invitat...      [DM (Discrete Mathematics and Combinatorics)]
+```
+
+If we check the `length` of this, there are 9 results: this matches the number given on the AMS bookstore
+website, so it looks like we have a success! 😃
+
+As outlined above, there is a _lot_ more information in the `AMSGSMInfoPage` object than just these 3 columns
+can show, but you get the idea.
+
+## One DataFrame to view them all
+
+If we want everything in a DataFrame, it's better to `map` than to use individual list comprehensions.
+For this, there's a convenience method `_df_repr` defined on `AMSGSMInfoPage` objects and a couple
+of the subclasses it contains in properties, such that you can obtain a pandas DataFrame of all the
+info (pretty much).
+
+To retrieve the parsed pages, I run:
+
+```sh
+python -ic "import dx; from dx.ams.gsm.scraper.reparser import reparse; pages, parsed_pages, reparsed_pages = reparse()"
+```
+
+Which gives a Python session with the `reparsed_pages` available to work with.
+
+Given such a list of parsed pages (i.e. a list of `AMSGSMInfoPage` objects), calling `pandas.concat` on
+the `map` of the `_df_repr` over each in the list gives a single DataFrame with `NaN` values
+for the missing properties unless where this absence is explicitly specified (e.g. some books in the
+series don't have a table of contents so `toc_info` is `None`).
+
+- The `sort_index(axis=1)` rearranges alphabetically rather than those columns not present in earlier entries
+  becoming added as rightmost columns
+- The `reset_index()` removes the singleton DataFrame row indexes (i.e. prevents all rows being indexed as `0`)
+
+```py
+page_df_list = list(map(lambda p: p._df_repr(), reparsed_pages))
+df_merged = pd.concat(page_df_list).sort_index(axis=1).reset_index(drop=True)
+```
+
+```py
+>>> df_merged
+                                              abstract  ... volume
+0    Topology, the foundation of modern analysis, a...  ...      1
+1    This book presents rigidity theory in a histor...  ...      2
+2    As the primary tool for doing explicit computa...  ...      3
+3    This book provides an elementary, self-contain...  ...      4
+4    In this book, Miranda takes the approach that ...  ...      5
+..                                                 ...  ...    ...
+202  This book gives a thorough and self-contained ...  ...    204
+203  This book is based on notes from a beginning g...  ...    205
+204  Extrinsic geometric flows are characterized by...  ...    206
+205  Applied topology is a modern subject which eme...  ...    207
+206  This book represents a novel approach to diffe...  ...    208
+
+[207 rows x 19 columns]
+```
+
+The entire DataFrame can be viewed neatly using a wrapper on `pydoc.pager` (which I keep
+on hand in my `~/.pythonrc`)...
+
+- Always use `pydoc.pager` like this, it'll gum up your STDIN if called in the wrong way
+
+```py
+from pydoc import pager
+
+def listpager(a_list):
+    pager("\n".join([i if type(i) is str else repr(i) for i in a_list]))
+    return
+```
+
+...and temporarily removing the limits on pandas display width:
+
+```py
+with option_context('display.max_rows', None, 'display.max_columns', None):
+    listpager([df_merged.to_string()])
+```
+
+...as long as you've exported the environment variable `$PAGER` as follows in `.bashrc`:
+
+```sh
+export PAGER='less -S'
+```
