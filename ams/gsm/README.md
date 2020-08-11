@@ -274,3 +274,17 @@ with option_context('display.max_rows', None, 'display.max_columns', None):
 ```sh
 export PAGER='less -S'
 ```
+
+If we run the following, we can view a more readable tabulated version of just the volume number,
+title, and author list:
+
+```sh
+listpager([s[5:] for s in tabulate.tabulate(df_merged.loc[:, ("volume", "title", "authors")], tablefmt='psql').split("\n")])
+```
+
+For ease of access, the parsed pages and the dataframe have been pickled:
+
+```py
+from dx.ams.gsm.scraper.pickle_utils import retrieve_pickle
+parsed_pages, df_merged = retrieve_pickle("gsm-1-208_parsings_and_dataframe.p")
+```

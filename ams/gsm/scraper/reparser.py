@@ -33,6 +33,10 @@ def responses_and_reparsed(pickle_filename="gsm-1-208_responses_and_parsings.p")
     responses, reparsed = retrieve_pickle(pickle_filename)
     return responses, reparsed
 
+def parsed_and_df(pickle_filename="gsm-1-208_parsings_and_dataframe.p"):
+    parsed, dataframe = retrieve_pickle(pickle_filename)
+    return parsed, dataframe
+
 def reparse():
     pages, parsed_pages = parsed_w_errors()
     reparsed_pages = []
