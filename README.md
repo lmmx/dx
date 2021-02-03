@@ -100,3 +100,12 @@ the desirable estimate of 2000 titles given above).
 The AMS website includes topics from the Mathematical Subject Classification (MSC) which would be
 interesting to either validate or to explore through the topic models (i.e. cross-reference the
 latent topics defined by LDA with the MSC labels).
+
+## Extension to subject indexes
+
+Additionally, I'd really like to see the indexes added as the 'documents' for topic modelling
+(simply removing the page numbers and collapsing the list into a single string would suffice).
+
+This would probably require further preprocessing (but in many cases it's available from images
+and this can be OCR'd reasonably well with `tesseract`). That might come more under "labour of
+love" than I'm currently willing to do!
