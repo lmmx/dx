@@ -1,5 +1,7 @@
 # dx » ams » gsm
 
+Data submodule in the `dx` package (to ship with the scraped dataset in future release)
+
 - AMS: "American Mathematical Society"
   - GSM: "Graduate Studies in Mathematics"
     - URL: [https://bookstore.ams.org/gsm](https://bookstore.ams.org/gsm)
