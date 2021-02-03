@@ -1,4 +1,6 @@
-requests
 bs4
+matplotlib
 more_itertools
 pandas
+requests
+scikit-learn

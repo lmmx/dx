@@ -269,6 +269,7 @@ def listpager(a_list):
 ...and temporarily removing the limits on pandas display width:
 
 ```py
+from pandas import option_context
 with option_context('display.max_rows', None, 'display.max_columns', None):
     listpager([df_merged.to_string()])
 ```
@@ -292,3 +293,49 @@ For ease of access, the parsed pages and the dataframe have been pickled:
 from dx.ams.gsm.scraper.pickle_utils import retrieve_pickle
 parsed_pages, df_merged = retrieve_pickle("gsm-1-208_parsings_and_dataframe.p")
 ```
+
+For exploratory data analysis (specifically, topic modelling) the 3 most likely to produce interesting
+distinguishing features are:
+
+- abstract
+- readership
+- reviews
+
+(The title will probably be too short to make good features)
+
+---
+
+The process of loading this data frame has been simplified for convenience:
+
+```py
+import dx
+from dx.lda.dataset import gsm_df
+gsm_df
+```
+⇣
+```STDOUT
+                                              abstract  ... volume
+0    Topology, the foundation of modern analysis, a...  ...      1
+1    This book presents rigidity theory in a histor...  ...      2
+2    As the primary tool for doing explicit computa...  ...      3
+3    This book provides an elementary, self-contain...  ...      4
+4    In this book, Miranda takes the approach that ...  ...      5
+..                                                 ...  ...    ...
+202  This book gives a thorough and self-contained ...  ...    204
+203  This book is based on notes from a beginning g...  ...    205
+204  Extrinsic geometric flows are characterized by...  ...    206
+205  Applied topology is a modern subject which eme...  ...    207
+206  This book represents a novel approach to diffe...  ...    208
+
+[207 rows x 19 columns]
+```
+
+To review the sparsity or completeness of each of these columns:
+
+- `len([x for x in abstracts if not x])` = 9 books with a blank (`""`) or missing (`None`) abstract
+- `len([x for x in readerships if not x])` = 155 books with a blank or missing readership entry
+- `len([x for x in reviews if x == []])` = 45 books without a review
+
+Abstracts should be inspected with topic models as 198/207 = 96% of the books here have them.
+
+Readership entries are clearly not worth inspecting further as the majority of the books lack one.
