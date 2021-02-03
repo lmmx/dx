@@ -12,8 +12,9 @@ package it for distribution), then use the pre-prepared dataset loader module:
 from dx.lda.dataset import gsm_df, abstracts, readerships, reviews, titles
 ```
 
-`gsm_df` contains the entire published catalogue's metadata at time of writing,
-and the other variables are Series from the data frame for convenience.
+`gsm_df` is a pandas DataFrame containing the entire published catalogue's metadata (at time of writing),
+while the other variables imported on the line above are pandas Series extracted from this DataFrame,
+provided for convenience.
 
 ```
 >>> titles.tolist()[0]
