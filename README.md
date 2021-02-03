@@ -94,3 +94,9 @@ If all books in these 4 series were valid (unlikely), the total dataset size wou
 
 If this were extended to all the candidate book series, the total would be 1943 titles (approaching
 the desirable estimate of 2000 titles given above).
+
+## Extension to MSC
+
+The AMS website includes topics from the Mathematical Subject Classification (MSC) which would be
+interesting to either validate or to explore through the topic models (i.e. cross-reference the
+latent topics defined by LDA with the MSC labels).
