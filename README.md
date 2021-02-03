@@ -85,3 +85,12 @@ the best candidates for a first attempt to enlarge the dataset. These are:
 - [Mathematical Surveys and Monographs](https://bookstore.ams.org/surv):
   > "detailed expositions in current research fields... survey of the subject along with a brief"
   > "introduction to recent developments and unsolved problems"
+
+The next largest is `stml`, the [Student Mathematical Library](https://bookstore.ams.org/stml) which I've
+encountered before. I'd like to include that too if possible (increasing the number of titles
+to 1345 or 77% of the initial candidate titles).
+
+If all books in these 4 series were valid (unlikely), the total dataset size would be (207 + 1345) = 1552 titles.
+
+If this were extended to all the candidate book series, the total would be 1943 titles (approaching
+the desirable estimate of 2000 titles given above).
