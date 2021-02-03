@@ -132,8 +132,9 @@ The pages are all parsed (see the `reparse` function in `crawler`⠶`reparser.py
 pickle (`store`⠶`gsm-1-208_responses_and_parsings.p`). The helper function `responses_and_reparsed`
 (also in `reparser.py`) will load the variables stored in this pickle (`responses` and `reparsed`).
 
-```sh
-python -ic "import dx; from dx.ams.gsm.scraper.reparser import responses_and_reparsed"
+```py
+import dx
+from dx.ams.gsm.scraper.reparser import responses_and_reparsed
 ```
 ⇣
 ```py
@@ -211,8 +212,9 @@ info (pretty much).
 
 To retrieve the parsed pages, I run:
 
-```sh
-python -ic "import dx; from dx.ams.gsm.scraper.reparser import reparse; pages, parsed_pages, reparsed_pages = reparse()"
+```py
+import dx
+from dx.ams.gsm.scraper.reparser import reparse; pages, parsed_pages, reparsed_pages = reparse()
 ```
 
 Which gives a Python session with the `reparsed_pages` available to work with.
