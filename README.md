@@ -15,7 +15,7 @@ from dx.lda.dataset import gsm_df, abstracts, readerships, reviews, titles
 `gsm_df` contains the entire published catalogue's metadata at time of writing,
 and the other variables are Series from the data frame for convenience.
 
-```py
+```
 >>> titles.tolist()[0]
 'The General Topology of Dynamical Systems'
 >>> abstracts.tolist()[0]
