@@ -46,8 +46,8 @@ The topic modelling was initially limited by the dataset size: I've seen referen
 estimated minimum viable size of a newsgroup dataset for LDA, while shorter documents (e.g. tweets) would be on the
 order of 5,000 to 10,000.
 
-This limitation motivated the expansion of this project to the entire AMS catalogue (beyond just the GSM series),
-so far .
+This limitation motivated the expansion of this project to the entire AMS catalogue beyond just the GSM series,
+so far reaching around 2,000 titles (see detailed inventory below).
 
 ## Book series included
 
