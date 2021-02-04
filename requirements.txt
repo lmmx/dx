@@ -1,4 +1,5 @@
 bs4
+html5lib
 matplotlib
 more_itertools
 pandas

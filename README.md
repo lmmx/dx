@@ -9,17 +9,17 @@ To get started, follow the instructions for downloading the dataset yourself (or
 package it for distribution), then use the pre-prepared dataset loader module:
 
 ```py
-from dx.lda.dataset import gsm_df, abstracts, readerships, reviews, titles
+from dx.lda.dataset import series_df, abstracts, readerships, reviews, titles
 ```
 
-`gsm_df` is a pandas DataFrame containing the metadata for the AMS GSM series (at time of writing
-207 books), while the other variables imported on the line above are pandas Series extracted from
-this DataFrame, provided for convenience.
+`series_df` is a pandas DataFrame containing the metadata for multiple book series from AMS (at time of writing
+775 books), while the other variables imported on the line above are Python lists extracted from
+this DataFrame [provided for convenience when using this as a dataset].
 
 ```
->>> titles.tolist()[0]
+>>> titles[0]
 'The General Topology of Dynamical Systems'
->>> abstracts.tolist()[0]
+>>> abstracts[0]
 "Topology, the foundation of modern analysis, arose historically as a way to organize ideas like
 compactness and connectedness which had emerged from analysis. Similarly, recent work in dynamical
 systems theory has both highlighted certain topics in the pre-existing subject of topological
@@ -49,12 +49,22 @@ order of 5,000 to 10,000.
 Regardless of what the precise figure is, this limitation motivates the expansion of this project to
 the entire AMS catalogue (beyond just the GSM series).
 
-## Other book series to include
+## Book series included
 
-In addition to the GSM, the AMS have several other book series given below by their series code
+This was initially intended to cover the GSM (Graduate Studies in Mathematics) book series, one of
+my favourite mathematical book series with 212 titles (207 of which are included here):
+
+- [AMS Graduate Studies in Mathematics](https://bookstore.ams.org/gsm):
+  > "The volumes in this series are specifically designed as graduate studies texts, but are also
+  > suitable for recommended and/or supplemental course reading. With appeal to both students and
+  > professors, these texts make ideal independent study resources. The breadth and depth of the
+  > series coverage make it an ideal acquisition for all academic libraries that support mathematics
+  > programs."
+
+The AMS have several other book series given below by their series code
 (alongside the number of titles in the series, top 3 in bold):
 
-- **chel: 200**
+- **chel: 220**
 - amstext: 49
 - amsip: 59
 - cworks: 50
@@ -66,10 +76,10 @@ In addition to the GSM, the AMS have several other book series given below by th
 - stml: 91
 - text: 56
 
-These series total a further 1736 titles, and are broadly not too different from the approach of
+These series total a further 1756 titles, and are broadly not too different from the approach of
 the GMS series, so would make a suitable extension to the dataset.
 
-The top 3 (`chel`, `conm`, `surv`) make up the majority: 1254 of 1736 (or 72%), and so would be
+The top 3 (`chel`, `conm`, `surv`) make up the majority: 1274 of 1756 (or 72%), and so would be
 the best candidates for a first attempt to enlarge the dataset. These are:
 
 - [AMS Chelsea Publishing](https://bookstore.ams.org/chel):
@@ -88,12 +98,12 @@ the best candidates for a first attempt to enlarge the dataset. These are:
 
 The next largest is `stml`, the [Student Mathematical Library](https://bookstore.ams.org/stml) which I've
 encountered before. I'd like to include that too if possible (increasing the number of titles
-to 1345 or 77% of the initial candidate titles).
+to 1365 or 77% of the initial candidate titles).
 
-If all books in these 4 series were valid (unlikely), the total dataset size would be (207 + 1345) = 1552 titles.
+If all books in these 4 series were valid (unlikely), the total dataset size would be (207 + 1365) = 1572 titles.
 
-If this were extended to all the candidate book series, the total would be 1943 titles (approaching
-the desirable estimate of 2000 titles given above).
+If this were extended to all the candidate book series, the total would be 1963 titles (approaching
+the more desirable rough figure of 2000 titles).
 
 ## Extension to MSC
 

@@ -1,0 +1,1 @@
+- Duplicated a lot of code across the multiple topics, remove e.g. topic parsing JS code
