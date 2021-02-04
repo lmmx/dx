@@ -42,68 +42,91 @@ plot_lda()
 
 ## Limitations
 
-The topic modelling is undoubtedly limited by the dataset size: I've seen references to 600 being the
-rough size of a newsgroup dataset for LDA, while shorter documents (e.g. tweets) would be on the
+The topic modelling was initially limited by the dataset size: I've seen references to 600 being the
+estimated minimum viable size of a newsgroup dataset for LDA, while shorter documents (e.g. tweets) would be on the
 order of 5,000 to 10,000.
 
-Regardless of what the precise figure is, this limitation motivates the expansion of this project to
-the entire AMS catalogue (beyond just the GSM series).
+This limitation motivated the expansion of this project to the entire AMS catalogue (beyond just the GSM series),
+so far .
 
 ## Book series included
 
 This was initially intended to cover the GSM (Graduate Studies in Mathematics) book series, one of
-my favourite mathematical book series with 212 titles (207 of which are included here):
+my favourite mathematical book series. The catalogue scraped here has expanded to cover other series from the AMS:
 
-- [AMS Graduate Studies in Mathematics](https://bookstore.ams.org/gsm):
+- `gsm`: [Graduate Studies in Mathematics](https://bookstore.ams.org/gsm) (212 titles)
   > "The volumes in this series are specifically designed as graduate studies texts, but are also
   > suitable for recommended and/or supplemental course reading. With appeal to both students and
   > professors, these texts make ideal independent study resources. The breadth and depth of the
   > series coverage make it an ideal acquisition for all academic libraries that support mathematics
   > programs."
 
-The AMS have several other book series given below by their series code
-(alongside the number of titles in the series, top 3 in bold):
-
-- **chel: 220**
-- amstext: 49
-- amsip: 59
-- cworks: 50
-- **conm: 770**
-- crmp: 56
-- dimacs: 76
-- hmath: 45
-- **surv: 264**
-- stml: 91
-- text: 56
-
-These series total a further 1756 titles, and are broadly not too different from the approach of
-the GMS series, so would make a suitable extension to the dataset.
-
-The top 3 (`chel`, `conm`, `surv`) make up the majority: 1274 of 1756 (or 72%), and so would be
-the best candidates for a first attempt to enlarge the dataset. These are:
-
-- [AMS Chelsea Publishing](https://bookstore.ams.org/chel):
+- `chel`: [AMS Chelsea Publishing](https://bookstore.ams.org/chel) (220 titles)
   > "some of the most important classics
   > that were once out of print available to new generations of mathematicians and graduate students"
 
-- [Contemporary Mathematics](https://bookstore.ams.org/conm): 
+- `conm`: [Contemporary Mathematics](https://bookstore.ams.org/conm) (770 titles)
   > "high-quality, refereed proceedings
   > written by recognized experts in their fields maintains high scientific standards. Volumes draw
   > from worldwide conferences and symposia sponsored by the American Mathematical Society and other
   > organizations"
 
-- [Mathematical Surveys and Monographs](https://bookstore.ams.org/surv):
+- `stml`: [Student Mathematical Library](https://bookstore.ams.org/stml) (91 titles)
+  > "The AMS undergraduate series, the Student Mathematical Library, is for books that will spark
+  > students' interests in modern mathematics and increase their appreciation for research. Books
+  > published in the series emphasize original topics and approaches. The step from mathematical
+  > coursework to mathematical research is one of the most important developments in a
+  > mathematician's career. To make the transition successfully, the student must be motivated and
+  > interested in doing mathematics rather than merely learning it."
+
+- `surv`: [Mathematical Surveys and Monographs](https://bookstore.ams.org/surv) (264 titles)
   > "detailed expositions in current research fields... survey of the subject along with a brief"
   > "introduction to recent developments and unsolved problems"
 
-The next largest is `stml`, the [Student Mathematical Library](https://bookstore.ams.org/stml) which I've
-encountered before. I'd like to include that too if possible (increasing the number of titles
-to 1365 or 77% of the initial candidate titles).
+- `amstext`: [AMS Pure and Applied Undergraduate Texts](https://bookstore.ams.org/amstext) (49 titles)
+  > "intended for undergraduate post-calculus courses and, in some cases, will provide applications
+  > in engineering and applied mathematics. The books are characterized by excellent exposition and
+  > maintain the highest standards of scholarship. This series was founded by the highly respected
+  > mathematician and educator, Paul J. Sally, Jr"
 
-If all books in these 4 series were valid (unlikely), the total dataset size would be (207 + 1365) = 1572 titles.
+- `amsip`: [AMS/IP Studies in Advanced Mathematics](https://bookstore.ams.org/amsip) (59 titles)
+  > "jointly published by the AMS and International Press, includes monographs, lecture notes,
+  > collections, and conference proceedings on current topics of importance in advanced mathematics.
+  > Harvard University Professor of Mathematics Shing-Tung Yau is Editor-in-Chief for the series"
 
-If this were extended to all the candidate book series, the total would be 1963 titles (approaching
-the more desirable rough figure of 2000 titles).
+- `cworks`: [Collected Works](https://bookstore.ams.org/cworks) (50 titles)
+  > "presents the substantial body of work of many outstanding mathematicians. Some collections
+  > include the complete works of an individual, while others feature selected papers. Readers can
+  > follow the major ideas and themes that developed over the course of a given mathematicians
+  > career."
+
+- `crmp`: [CRM Proceedings & Lecture Notes](https://bookstore.ams.org/crmp) (56 titles)
+  > "encompasses conference proceedings and lecture notes from important research conferences held
+  > at the Centre de Recherches Mathématiques at the Université de Montréal. This series is
+  > co-published by the AMS and the Centre de Recherches Mathématiques"
+
+- `dimacs`: [DIMACS: Series in Discrete Mathematics and Theoretical Computer Science](https://bookstore.ams.org/dimacs) (76 titles)
+  > "includes conference and workshop proceedings and volumes on education in discrete mathematics
+  > and theoretical computer science. Volumes are derived from programs at Rutgers Universitys
+  > Center for Discrete Mathematics and Theoretical Computer Science and also sponsored by Princeton
+  > University, AT&T Labs Research, Bell Labs (Lucent Technologies), Cancer Institute of New Jersey
+  > (CINJ), NEC Research Institute, and Telcordia Technologies."
+
+- `hmath`: [History of Mathematics](https://bookstore.ams.org/hmath) (45 titles)
+  > "compelling historical perspectives on the individuals and communities that have profoundly
+  > influenced mathematics development. Each book constitutes a valuable addition to an historical
+  > or mathematical book collection. Volumes 4 through 39 were co-published with the London
+  > Mathematical Society. From volume 40 on, these volumes are published by the AMS."
+
+- `text`: [AMS/MAA Textbooks](https://bookstore.ams.org/text) (56 titles)
+  > "cover all levels of the undergraduate curriculum with a focus on textbooks for upper-division
+  > students. They are written by college and university faculty and are carefully reviewed by an
+  > editorial board of teaching faculty"
+
+
+With only a few omitted due to technicalities, the total dataset size is currently 1935 of 1963 titles
+(so approaches the 2000 title mark, a reasonable size, and about an order of magnitude larger than
+the initial dataset!)
 
 ## Extension to MSC
 

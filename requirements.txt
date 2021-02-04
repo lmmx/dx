@@ -5,3 +5,4 @@ more_itertools
 pandas
 requests
 scikit-learn
+tqdm

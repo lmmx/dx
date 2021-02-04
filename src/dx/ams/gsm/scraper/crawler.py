@@ -71,7 +71,8 @@ def GET_book_metadata_pages(initialise_at=1, volumes=None, sort=True, dry_run=Fa
     with open(data_dir / "book-series-number-listing.csv") as csvfile:
         reader = csv.reader(csvfile)
         series_dict = dict(reader)
-    series_dict.pop("NaN") # Discard the 3 unusable entries
+    if "NaN" in series_dict:
+        series_dict.pop("NaN") # Discard the unusable entries
     if sort:
         series_dict = dict(sorted(series_dict.items(), key=lambda item: int(item[0])))
     if volumes is None:

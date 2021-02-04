@@ -1,8 +1,16 @@
 from ..ams.gsm.scraper.reparser import responses_and_reparsed as gsm_results
 from ..ams.chel.scraper.reparser import responses_and_reparsed as chel_results
-#from ..ams.conm.scraper.reparser import responses_and_reparsed as conm_results
+from ..ams.conm.scraper.reparser import responses_and_reparsed as conm_results
 from ..ams.stml.scraper.reparser import responses_and_reparsed as stml_results
 from ..ams.surv.scraper.reparser import responses_and_reparsed as surv_results
+from ..ams.amstext.scraper.reparser import responses_and_reparsed as amstext_results
+from ..ams.amsip.scraper.reparser import responses_and_reparsed as amsip_results
+from ..ams.cworks.scraper.reparser import responses_and_reparsed as cworks_results
+from ..ams.crmp.scraper.reparser import responses_and_reparsed as crmp_results
+from ..ams.dimacs.scraper.reparser import responses_and_reparsed as dimacs_results
+from ..ams.hmath.scraper.reparser import responses_and_reparsed as hmath_results
+from ..ams.text.scraper.reparser import responses_and_reparsed as text_results
+
 import pandas as pd
 
 __all__ = [
@@ -10,9 +18,16 @@ __all__ = [
     "series_df_dict",
     "gsm_df",
     "chel_df",
-#    "conm_df",
+    "conm_df",
     "stml_df",
     "surv_df",
+    "amstext_df",
+    "amsip_df",
+    "cworks_df",
+    "crmp_df",
+    "dimacs_df",
+    "hmath_df",
+    "text_df",
     "abstracts",
     "readerships",
     "reviews",
@@ -20,11 +35,18 @@ __all__ = [
 ]
 
 series_pages = {
-        "gsm": gsm_results()[1],
-        "chel": chel_results()[1],
-#        "conm": conm_results()[1],
-        "stml": stml_results()[1],
-        "surv": surv_results()[1],
+    "gsm": gsm_results()[1],
+    "chel": chel_results()[1],
+    "conm": conm_results()[1],
+    "stml": stml_results()[1],
+    "surv": surv_results()[1],
+    "amstext": amstext_results()[1],
+    "amsip": amsip_results()[1],
+    "cworks": cworks_results()[1],
+    "crmp": crmp_results()[1],
+    "dimacs": dimacs_results()[1],
+    "hmath": hmath_results()[1],
+    "text": text_results()[1],
 }
 
 def pages_to_df(parsed_pages, filter_exceptions=True):
@@ -40,11 +62,18 @@ def abs_readers_revs(df):
     return abstracts, readerships, reviews, titles
 
 series_df_dict = dict([
-    ("gsm", gsm_df := pages_to_df(series_pages.get("gsm"))),
-    ("chel", chel_df := pages_to_df(series_pages.get("chel"))),
-#    ("conm", conm_df := pages_to_df(series_pages.get("conm"))),
-    ("stml", stml_df := pages_to_df(series_pages.get("stml"))),
-    ("surv", surv_df := pages_to_df(series_pages.get("surv"))),
+    ("gsm"    , gsm_df     := pages_to_df(series_pages.get("gsm")    )),
+    ("chel"   , chel_df    := pages_to_df(series_pages.get("chel")   )),
+    ("conm"   , conm_df    := pages_to_df(series_pages.get("conm")   )),
+    ("stml"   , stml_df    := pages_to_df(series_pages.get("stml")   )),
+    ("surv"   , surv_df    := pages_to_df(series_pages.get("surv")   )),
+    ("amstext", amstext_df := pages_to_df(series_pages.get("amstext"))),
+    ("amsip"  , amsip_df   := pages_to_df(series_pages.get("amsip")  )),
+    ("cworks" , cworks_df  := pages_to_df(series_pages.get("cworks") )),
+    ("crmp"   , crmp_df    := pages_to_df(series_pages.get("crmp")   )),
+    ("dimacs" , dimacs_df  := pages_to_df(series_pages.get("dimacs") )),
+    ("hmath"  , hmath_df   := pages_to_df(series_pages.get("hmath")  )),
+    ("text"   , text_df    := pages_to_df(series_pages.get("text")   )),
 ])
 
 abstracts, readerships, reviews, titles = [], [], [], []

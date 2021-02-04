@@ -6,8 +6,6 @@ Data submodule in the `dx` package (to be shipped with the scraped dataset in fu
   - CONM: "Contemporary Mathematics"
     - URL: [https://bookstore.ams.org/conm](https://bookstore.ams.org/conm)
 
-IMPORTANT: THE REST OF THIS FILE IS A DUPLICATE OF DX:AMS:GSM AND WILL BE CHANGED
-
 ## Manifest
 
 - `parse_subject_form.js` is a 3 line Javascript script run in the browser console at the URL above
@@ -143,18 +141,18 @@ decided I don't care about] is stored in a `AMSGSMInfoPage` object (see `soup_st
   imported from `parse_topics.py`
 
 The pages are all parsed (see the `reparse` function in `crawler`⠶`reparser.py`), and stored as a
-pickle (`store`⠶`gsm-1-208_responses_and_parsings.p`). The helper function `responses_and_reparsed`
+pickle (`store`⠶`conm-1-763_responses_and_parsings.p`). The helper function `responses_and_reparsed`
 (also in `reparser.py`) will load the variables stored in this pickle (`responses` and `reparsed`).
 
 ```py
 import dx
-from dx.ams.gsm.scraper.reparser import responses_and_reparsed
+from dx.ams.conm.scraper.reparser import responses_and_reparsed
 ```
 ⇣
 ```py
 >>> pages, parsed_pages = responses_and_reparsed()
 >>> parsed_pages[0]
-<dx.ams.gsm.scraper.soup_structure.AMSGSMInfoPage object at 0x7f6635203c10>
+<dx.ams.conm.scraper.soup_structure.AMSGSMInfoPage object at 0x7f6635203c10>
 >>>
 ```
 
@@ -162,73 +160,11 @@ from dx.ams.gsm.scraper.reparser import responses_and_reparsed
 
 Now the fun part!
 
-Many simple questions can now be answered using the variable `reparsed` which is a list of
-`AMSGSMPageInfo` objects.
-
-```py
-import pandas as pd
-volumes = [p.metadata.metadoc.volume for p in parsed_pages]
-titles = [p.metadata.title for p in parsed_pages]
-subjects = [p.metadata.metadoc.subject for p in parsed_pages]
-col_labels = ["volume", "title", "subjects"]
-df = pd.DataFrame(zip(volumes, titles, subjects), columns=col_labels)
-df
-```
-⇣
-```STDOUT
-      volume                                              title                                           subjects
-0          1          The General Topology of Dynamical Systems        [GT (Geometry and Topology), AN (Analysis)]
-1          2                             Combinatorial Rigidity      [DM (Discrete Mathematics and Combinatorics)]
-2          3                   An Introduction to Gröbner Bases  [DM (Discrete Mathematics and Combinatorics), ...
-3          4  The Integrals of Lebesgue, Denjoy, Perron, and...                                    [AN (Analysis)]
-4          5              Algebraic Curves and Riemann Surfaces  [AA (Algebra and Algebraic Geometry), GT (Geom...
-..       ...                                                ...                                                ...
-202      204                 Hochschild Cohomology for Algebras              [AA (Algebra and Algebraic Geometry)]
-203      205       Invitation to Partial Differential Equations                      [DE (Differential Equations)]
-204      206                          Extrinsic Geometric Flows                       [GT (Geometry and Topology)]
-205      207  Organized Collapse: An Introduction to Discret...  [GT (Geometry and Topology), AA (Algebra and A...
-206      208  Geometry and Topology of Manifolds: Surfaces a...                       [GT (Geometry and Topology)]
-
-[207 rows x 3 columns]
-```
-
-E.g. we can now see a list of all books in the discrete maths and combinatorics section:
-
-```py
-df.loc[df.subjects.apply(lambda row: any(s.code == "DM" for s in row))]
-```
-⇣
-```STDOUT
-      volume                                              title                                           subjects
-1          2                             Combinatorial Rigidity      [DM (Discrete Mathematics and Combinatorics)]
-2          3                   An Introduction to Gröbner Bases  [DM (Discrete Mathematics and Combinatorics), ...
-53        54                              A Course in Convexity  [DM (Discrete Mathematics and Combinatorics), ...
-88        89                          A Course on the Web Graph      [DM (Discrete Mathematics and Combinatorics)]
-101      103                 Configurations of Points and Lines  [DM (Discrete Mathematics and Combinatorics), ...
-144      146                          Combinatorial Game Theory  [AP (Applications), DM (Discrete Mathematics a...
-162      164      Expansion in Finite Simple Groups of Lie Type  [AA (Algebra and Algebraic Geometry), DM (Disc...
-170      172             Combinatorics and Random Matrix Theory  [PR (Probability and Statistics), DM (Discrete...
-193      195  Combinatorial Reciprocity Theorems: An Invitat...      [DM (Discrete Mathematics and Combinatorics)]
-```
-
-If we check the `length` of this, there are 9 results: this matches the number given on the AMS bookstore
-website, so it looks like we have a success! 😃
-
-As outlined above, there is a _lot_ more information in the `AMSGSMInfoPage` object than just these 3 columns
-can show, but you get the idea.
-
-## One DataFrame to view them all
-
-If we want everything in a DataFrame, it's better to `map` than to use individual list comprehensions.
-For this, there's a convenience method `_df_repr` defined on `AMSGSMInfoPage` objects and a couple
-of the subclasses it contains in properties, such that you can obtain a pandas DataFrame of all the
-info (pretty much).
-
 To retrieve the parsed pages, I run:
 
 ```py
 import dx
-from dx.ams.gsm.scraper.reparser import reparse; pages, parsed_pages, reparsed_pages = reparse()
+from dx.ams.conm.scraper.reparser import reparse; pages, parsed_pages, reparsed_pages = reparse()
 ```
 
 Which gives a Python session with the `reparsed_pages` available to work with.
@@ -302,8 +238,8 @@ listpager([s[5:] for s in tabulate.tabulate(df_merged.loc[:, ("volume", "title",
 For ease of access, the parsed pages and the dataframe have been pickled:
 
 ```py
-from dx.ams.gsm.scraper.pickle_utils import retrieve_pickle
-parsed_pages, df_merged = retrieve_pickle("gsm-1-208_parsings_and_dataframe.p")
+from dx.ams.conm.scraper.pickle_utils import retrieve_pickle
+parsed_pages, df_merged = retrieve_pickle("conm-1-763_responses_and_parsings.p")
 ```
 
 For exploratory data analysis (specifically, topic modelling) the 3 most likely to produce interesting
@@ -321,32 +257,32 @@ The process of loading this data frame has been simplified for convenience:
 
 ```py
 import dx
-from dx.lda.dataset import gsm_df
-gsm_df
+from dx.lda.dataset import conm_df
+conm_df
 ```
 ⇣
 ```STDOUT
                                               abstract  ... volume
-0    Topology, the foundation of modern analysis, a...  ...      1
-1    This book presents rigidity theory in a histor...  ...      2
-2    As the primary tool for doing explicit computa...  ...      3
-3    This book provides an elementary, self-contain...  ...      4
-4    In this book, Miranda takes the approach that ...  ...      5
+0    The study of Markov random fields has brought ...  ...      1
+1                                                 None  ...      2
+2    The authors' purpose in writing this paper is ...  ...      3
+3                                                 None  ...      4
+4    This book is directed to researchers in Lie th...  ...      5
 ..                                                 ...  ...    ...
-202  This book gives a thorough and self-contained ...  ...    204
-203  This book is based on notes from a beginning g...  ...    205
-204  Extrinsic geometric flows are characterized by...  ...    206
-205  Applied topology is a modern subject which eme...  ...    207
-206  This book represents a novel approach to diffe...  ...    208
+765  This volume is put together by the National As...  ...    759
+766  This volume contains the proceedings of a conf...  ...    760
+767  The Seventh ARTA (“Advances in Representation ...  ...    761
+768  This book formulates a new conjecture about qu...  ...    762
+769  This volume contains the proceedings of the wo...  ...    763
 
-[207 rows x 19 columns]
+[770 rows x 19 columns]
 ```
 
 To review the sparsity or completeness of each of these columns:
 
-- `len([x for x in abstracts if not x])` = 9 books with a blank (`""`) or missing (`None`) abstract
-- `len([x for x in readerships if not x])` = 155 books with a blank or missing readership entry
-- `len([x for x in reviews if x == []])` = 45 books without a review
+- `len([x for x in abstracts if not x])` = 23 books with a blank (`""`) or missing (`None`) abstract
+- `len([x for x in readerships if not x])` = 143 books with a blank or missing readership entry
+- `len([x for x in reviews if x == []])` = 747 books without a review
 
 Abstracts should be inspected with topic models as 198/207 = 96% of the books here have them.
 
