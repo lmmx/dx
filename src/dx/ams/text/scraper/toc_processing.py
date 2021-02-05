@@ -1,4 +1,4 @@
-from dx.share import add_props_to_ns
+from dx.share import add_props_to_ns, validate_roman_numeral, roman2int
 from .symbol_formatting import RegexMatchable, SymbolGroup
 from .soup_postprocessing import listpager
 from traceback import print_tb
@@ -22,16 +22,47 @@ class TocChapNum(RegexMatchable):
             if mg_ch:
                 num_group = num_group[len(mg_ch):] # left-strip the chapter substring
             num_tup = tuple(n for n in num_group.split(".") if n)
-            num_check = all(map(str.isnumeric, num_tup))
-            assert num_check, ValueError(f"Non-numeric chapter numbering: {num_tup}")
+            if not all(map(str.isnumeric, num_tup)):
+                raise ValueError(f"Non-numeric chapter numbering: {num_tup}")
             return tuple(map(int, num_tup))
         else:
             return m
+
+class TocChapRomNum(RegexMatchable):
+    def __init__(self, ch_num_substr):
+        self.substr = ch_num_substr # Store input string (ToC entry title) in a property
+        # Complain if the (sub)chapter numbering regex doesn't match the title string
+        if not self.match(self.substr):
+            raise ValueError("No chapter number in this string")
+        self.numeric = self.get_numbering_tuple(self.substr)
+
+    add_props_to_ns(["numeric", "substr"])
+    # set inherited read-only `RegexMatchable.re` property
+    _re = r"^(Chapter )?((M{0,4})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})\.)"
+
+    @classmethod
+    def get_numbering_tuple(cls, target_str):
+        m = cls.match(target_str)
+        if m:
+            mg_ch, mg_num = m.groups()[:2] # only need the broadest Roman numeral group
+            num_group = m.group()
+            if mg_ch:
+                num_group = num_group[len(mg_ch):] # left-strip the chapter substring
+            num_tup = tuple(n for n in num_group.split(".") if n)
+            if not all(map(validate_roman_numeral, num_tup)):
+                raise ValueError(f"Non-Roman numeric chapter numbering: {num_tup}")
+            return tuple(map(roman2int, num_tup))
+        else:
+            return m
+
 
 class TocTitle(str):
     def __init__(self, t):
         self.title_text = t
         ch_num_str = TocChapNum.from_target_str(t)
+        if ch_num_str is None:
+            # Retry as Roman numeral instead
+            ch_num_str = TocChapRomNum.from_target_str(t)
         self.ch_num = ch_num_str
         title_postnum = None if self.ch_num is None else t[len(self.ch_num.substr):]
         self.ch_title_postnum = title_postnum

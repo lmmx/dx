@@ -142,16 +142,16 @@ decided I don't care about] is stored in a `AMSGSMInfoPage` object (see `soup_st
   imported from `parse_topics.py`
 
 The pages are all parsed (see the `reparse` function in `crawler`⠶`reparser.py`), and stored as a
-pickle (`store`⠶`chel-23-384_responses_and_parsings.p`). The helper function `responses_and_reparsed`
+pickle (`store`⠶`chel-23-384_responses_and_parsings.p`). The helper function `responses_and_parsed`
 (also in `reparser.py`) will load the variables stored in this pickle (`responses` and `reparsed`).
 
 ```py
 import dx
-from dx.ams.chel.scraper.reparser import responses_and_reparsed
+from dx.ams.chel.scraper.reparser import responses_and_parsed
 ```
 ⇣
 ```py
->>> pages, parsed_pages = responses_and_reparsed()
+>>> pages, parsed_pages = responses_and_parsed()
 >>> parsed_pages[0]
 <dx.ams.chel.scraper.soup_structure.AMSGSMInfoPage object at 0x7f6635203c10>
 >>>
@@ -298,7 +298,7 @@ The process of loading this data frame has been simplified for convenience:
 
 ```py
 import dx
-from dx.lda.dataset import chel_df
+from dx.dataset import chel_df
 chel_df
 ```
 ⇣
@@ -322,7 +322,7 @@ chel_df
 To review the sparsity or completeness of each of these columns:
 
 ```py
-abstracts, readerships, reviews, titles = dx.lda.dataset.abs_readers_revs(chel_df)
+abstracts, readerships, reviews, titles, tocs = dx.dataset.abs_readers_revs_tocs(chel_df)
 ```
 
 - `len([x for x in abstracts if not x])` = 30 books with a blank (`""`) or missing (`None`) abstract

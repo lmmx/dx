@@ -9,7 +9,7 @@ To get started, follow the instructions for downloading the dataset yourself (or
 package it for distribution), then use the pre-prepared dataset loader module:
 
 ```py
-from dx.lda.dataset import series_df, abstracts, readerships, reviews, titles
+from dx.dataset import series_df, abstracts, readerships, reviews, titles
 ```
 
 `series_df` is a pandas DataFrame containing the metadata for multiple book series from AMS (at time of writing
@@ -39,6 +39,28 @@ To model the titles with LDA:
 from dx.lda.plot_lda_topics_example import plot_lda
 plot_lda()
 ```
+
+## Topic modelling
+
+So far I've taken a few different approaches to topic modelling (all using Latent Dirichlet
+Allocation), and the two sources of text are:
+
+- abstracts (AKA 'blurb')
+- table of contents (chapter and subchapter headings)
+
+TODO: combine both of these for each book into a single corpus and model that.
+
+Each of the following has involved doing a grid search over the value to use for `max_df`
+(i.e. what top percentage of most common words to exclude in preprocessing), after which the
+results can be explored by reviewing the output images.
+
+- Model all text in the abstract for each book from `dx.dataset.abstracts`
+  - This is more effective at removing all 'stopwords'
+- Model all text in the abstract for each book, one subject area at a time, from `dx.dataset.abstracts_by_subject`
+  - This is more insightful as to the variation within a particular sub-field (and avoids the topic
+    model simply recovering an approximation to these 10 subject areas).
+- Model all text in the table of contents for each book from `dx.dataset.toc`
+- Model all text in the table of contents for each book, one subject area at a time, from `dx.dataset.toc_by_subject`
 
 ## Limitations
 

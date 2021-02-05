@@ -6,6 +6,8 @@ from .pickle_utils import retrieve_pickle
 #from sys import stderr
 #from traceback import print_tb
 
+CRAWLED_AND_PARSED_PICKLE = "stml-1-93_responses_and_parsings.p"
+
 #def responses_only(pickle_filename="gsm-1-208_responses.p"):
 #    responses = retrieve_pickle(pickle_filename)
 #    return responses
@@ -29,7 +31,7 @@ from .pickle_utils import retrieve_pickle
 #        setattr(e, "__traceback_str_list__", tb_str_list)
 #    return errors_with_tb
 
-def responses_and_reparsed(pickle_filename="stml-1-93_responses_and_parsings.p"):
+def responses_and_parsed(pickle_filename=CRAWLED_AND_PARSED_PICKLE):
     responses, reparsed = retrieve_pickle(pickle_filename)
     return responses, reparsed
 

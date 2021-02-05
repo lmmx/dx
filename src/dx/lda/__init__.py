@@ -1,1 +1,1 @@
-from . import plot_lda_topics_example, dataset
+from . import plot_lda_topics_example

@@ -144,16 +144,16 @@ decided I don't care about] is stored in a `AMSGSMInfoPage` object (see `soup_st
   imported from `parse_topics.py`
 
 The pages are all parsed (see the `reparse` function in `crawler`⠶`reparser.py`), and stored as a
-pickle (`store`⠶`surv-1-251_responses_and_parsings.p`). The helper function `responses_and_reparsed`
+pickle (`store`⠶`surv-1-251_responses_and_parsings.p`). The helper function `responses_and_parsed`
 (also in `reparser.py`) will load the variables stored in this pickle (`responses` and `reparsed`).
 
 ```py
 import dx
-from dx.ams.surv.scraper.reparser import responses_and_reparsed
+from dx.ams.surv.scraper.reparser import responses_and_parsed
 ```
 ⇣
 ```py
->>> pages, parsed_pages = responses_and_reparsed()
+>>> pages, parsed_pages = responses_and_parsed()
 >>> parsed_pages[0]
 <dx.ams.surv.scraper.soup_structure.AMSGSMInfoPage object at 0x7f6635203c10>
 >>>
@@ -229,8 +229,8 @@ To retrieve the parsed pages, I run:
 
 ```py
 import dx
-from dx.ams.surv.scraper.reparser import responses_and_reparsed
-pages, parsed_pages = responses_and_reparsed()
+from dx.ams.surv.scraper.reparser import responses_and_parsed
+pages, parsed_pages = responses_and_parsed()
 ```
 
 Given such a list of parsed pages (i.e. a list of `AMSGSMInfoPage` objects), calling `pandas.concat` on
@@ -321,7 +321,7 @@ The process of loading this data frame has been simplified for convenience:
 
 ```py
 import dx
-from dx.lda.dataset import surv_df
+from dx.dataset import surv_df
 surv_df
 ```
 ⇣

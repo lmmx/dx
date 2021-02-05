@@ -40,11 +40,11 @@ dx.ams.newmodule.scraper.store_as_pickle((pages, parsed_pages), pickle_name)
 ```
 
 - Either print out the value of `pickle_name` or look in the module's `store/` directory,
-  and make this the default value passed to `responses_and_reparsed` in `scraper.reparser`
+  and make this the default value passed to `responses_and_parsed` in `scraper.reparser`
 - Update the README of the new module and remove all references to the template module
   (search for "gsm" and modify), and also record the pickle location in there
-- In `dx.lda.dataset`:
-  - Import the new module's `reparser`⠶`responses_and_reparsed` function as `newmodule_results`
+- In `dx.dataset`:
+  - Import the new module's `reparser`⠶`responses_and_parsed` function as `newmodule_results`
   - Add an entry for `newmodule_df` into `__all__`
   - Add an entry into the `series_pages` dict and another into `series_df_dict`
 
