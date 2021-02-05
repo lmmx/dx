@@ -1,6 +1,6 @@
-from .parse_topics import topics
-from .url_utils import base_url
-from .time_utils import StopWatch
+from ...share.scraper.parse_topics import topics
+from ...share.scraper.url_utils import base_url
+from ...share.scraper.time_utils import StopWatch
 from ..data import dir_path as data_dir
 import requests
 import csv

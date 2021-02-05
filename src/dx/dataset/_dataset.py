@@ -1,7 +1,5 @@
 from ..ams.gsm.scraper import topics as subjects  # should be moved into ..share
 from ..ams.gsm.scraper.reparser import responses_and_parsed as gsm_results
-
-# from ..ams.gsm.scraper.reparser import reparse as gsm_results
 from ..ams.chel.scraper.reparser import responses_and_parsed as chel_results
 from ..ams.conm.scraper.reparser import responses_and_parsed as conm_results
 from ..ams.stml.scraper.reparser import responses_and_parsed as stml_results
@@ -47,7 +45,6 @@ __all__ = [
 
 series_pages = {
     "gsm": gsm_results()[1],
-    # "gsm": gsm_results()[2], # reparsed_pages
     "chel": chel_results()[1],
     "conm": conm_results()[1],
     "stml": stml_results()[1],
@@ -87,6 +84,7 @@ def extract_toc_titles(toc):
     ):
         titles = [*map(lambda e: e.title if e else [], toc)]
     else:
+        breakpoint()
         titles = [*map(lambda e: e.title if e else [], toc)]
     return titles
 
