@@ -9,12 +9,17 @@ To get started, follow the instructions for downloading the dataset yourself (or
 package it for distribution), then use the pre-prepared dataset loader module:
 
 ```py
-from dx.dataset import series_df, abstracts, readerships, reviews, titles
+from dx.dataset import series_df, abstracts, readerships, reviews, titles, tocs
 ```
 
-`series_df` is a pandas DataFrame containing the metadata for multiple book series from AMS (at time of writing
-775 books), while the other variables imported on the line above are Python lists extracted from
-this DataFrame [provided for convenience when using this as a dataset].
+- `series_df` is a pandas DataFrame containing the metadata for multiple book series from AMS (at time of writing
+  775 books)
+- `abstracts`, `readerships`, `reviews`, `titles`, `tocs` are Python lists extracted from
+  this DataFrame [provided for convenience when using this as a dataset].
+  - Not shown above: additionally `dx.dataset` has `series_by_subject`, `abstracts_by_subject`,
+    `readerships_by_subject`, `reviews_by_subject`, `titles_by_subject`, `tocs_by_subject`
+    which are dictionaries whose keys are the AMS bookstore's 10 topics
+    (see [`src/dx/share/data/topics.csv`](src/dx/share/data/topics.csv))
 
 ```
 >>> titles[0]
