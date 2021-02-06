@@ -36,7 +36,7 @@ and other researchers who use dynamical systems in their work."
 To model the titles with LDA:
 
 ```py
-from dx.lda.plot_lda_topics_example import plot_lda
+from dx.lda.plot_lda_topics import plot_lda
 plot_lda()
 ```
 

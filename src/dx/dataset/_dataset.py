@@ -95,21 +95,21 @@ def extract_toc_titles(toc):
                 if hasattr(e.title, "ch_num"):
                     postnum = e.title.ch_title_postnum
                     if postnum:
-                        titles.append(postnum)
+                        titles.append(postnum.strip())
                         continue
                     # else if None or "", replace it with title_text
                 if first_toc_with_ch_num < i < last_toc_with_ch_num:
                     ttext = e.title.title_text
                     if not ttext:
                         ttext = None
-                    titles.append(ttext)
+                    titles.append(ttext.strip())
                 else:
                     pass # skip any preface/appendix chapters for this
             else:
                 titles.append("")
     else:
         # breakpoint()
-        titles = [*map(lambda e: e.title if e else [], toc)]
+        titles = [*map(lambda e: e.title.strip() if e else [], toc)]
     return titles
 
 
@@ -170,8 +170,7 @@ for subject_code in subjects:
     }
     for col in ("abstract", "readership", "reviews", "title", "toc_info")
 ]
-for subj, tocs in tocs_by_subject.items():
+for subj, subj_tocs in tocs_by_subject.items():
     tocs_by_subject[subj] = [
-        #*map(lambda t: extract_toc_titles(t.toc_entries) if t else [], tocs)
-        extract_toc_titles(t.toc_entries) if t else [] for t in tocs
+        extract_toc_titles(t.toc_entries) if t else [] for t in subj_tocs
     ]
