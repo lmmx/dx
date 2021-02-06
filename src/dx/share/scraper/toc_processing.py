@@ -11,7 +11,7 @@ class TocChapNum(RegexMatchable):
         self.numeric = self.get_numbering_tuple(self.substr)
 
     add_props_to_ns(["numeric", "substr"])
-    _re = r"^(Chapter |CHAPTER )?(\d+\.)+" # set inherited read-only `RegexMatchable.re` property
+    _re = r"^(Chapter |CHAPTER |§ ?)?(\d+\.)+" # set inherited read-only `RegexMatchable.re` property
 
     @classmethod
     def get_numbering_tuple(cls, target_str):
@@ -38,7 +38,7 @@ class TocChapRomNum(RegexMatchable):
 
     add_props_to_ns(["numeric", "substr"])
     # set inherited read-only `RegexMatchable.re` property
-    _re = r"^(Chapter |CHAPTER )?((M{0,4})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})\.)"
+    _re = r"^(Chapter |CHAPTER |§ ?)?((M{0,4})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})\.)+"
 
     @classmethod
     def get_numbering_tuple(cls, target_str):
