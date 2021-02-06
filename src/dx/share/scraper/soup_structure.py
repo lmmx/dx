@@ -77,7 +77,7 @@ class TextInfoSection(HTMLSection):
     }
 
 
-class AMSGSMInfoPage:
+class AMSBookInfoPage:
     def __init__(self, soup):
         root_selector = "div.productPage div.bounds" # All info is below this
         subsoup = soup.select_one(root_selector)

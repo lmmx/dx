@@ -88,7 +88,7 @@ As well as more circumstantial info (with which to make a nice library-like inte
 ## Metadata storage
 
 The metadata (as well as some more details like ISBN) above [except for the ebook price which I
-decided I don't care about] is stored in a `AMSGSMInfoPage` object (see `soup_structure.py`).
+decided I don't care about] is stored in a `AMSBookInfoPage` object (see `soup_structure.py`).
 
 - The `content` attribute on this object stores a `ContentSection` object, which now has only a single property:
   - `cover_image` which is a string, the URL suffix at _https://bookstore.ams.org_ of the cover image JPG file
@@ -155,7 +155,7 @@ from dx.ams.surv.scraper.reparser import responses_and_parsed
 ```py
 >>> pages, parsed_pages = responses_and_parsed()
 >>> parsed_pages[0]
-<dx.ams.surv.scraper.soup_structure.AMSGSMInfoPage object at 0x7f6635203c10>
+<dx.ams.surv.scraper.soup_structure.AMSBookInfoPage object at 0x7f6635203c10>
 >>>
 ```
 
@@ -215,13 +215,13 @@ df.loc[df.subjects.apply(lambda row: any(s.code == "DM" for s in row))]
 If we check the `length` of this, there are 9 results: this matches the number given on the AMS bookstore
 website, so it looks like we have a success! 😃
 
-As outlined above, there is a _lot_ more information in the `AMSGSMInfoPage` object than just these 3 columns
+As outlined above, there is a _lot_ more information in the `AMSBookInfoPage` object than just these 3 columns
 can show, but you get the idea.
 
 ## One DataFrame to view them all
 
 If we want everything in a DataFrame, it's better to `map` than to use individual list comprehensions.
-For this, there's a convenience method `_df_repr` defined on `AMSGSMInfoPage` objects and a couple
+For this, there's a convenience method `_df_repr` defined on `AMSBookInfoPage` objects and a couple
 of the subclasses it contains in properties, such that you can obtain a pandas DataFrame of all the
 info (pretty much).
 
@@ -233,7 +233,7 @@ from dx.ams.surv.scraper.reparser import responses_and_parsed
 pages, parsed_pages = responses_and_parsed()
 ```
 
-Given such a list of parsed pages (i.e. a list of `AMSGSMInfoPage` objects), calling `pandas.concat` on
+Given such a list of parsed pages (i.e. a list of `AMSBookInfoPage` objects), calling `pandas.concat` on
 the `map` of the `_df_repr` over each in the list gives a single DataFrame with `NaN` values
 for the missing properties unless where this absence is explicitly specified (e.g. some books in the
 series don't have a table of contents so `toc_info` is `None`).

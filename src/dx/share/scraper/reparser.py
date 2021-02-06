@@ -1,14 +1,14 @@
 from .pickle_utils import retrieve_pickle, store_as_pickle
 from .soup_processor import soup_from_response
-from .soup_structure import AMSGSMInfoPage
+from .soup_structure import AMSBookInfoPage
 from sys import stderr
 from traceback import print_tb
 
 def reparse(
-    overwrite_pickle=False,
     pickle_retrieval_func,
     pickle_storage_func,
-    pickle_filename
+    pickle_filename,
+    overwrite_pickle=False,
 ):
     """
     Read back in a stored set of pages (the responses the crawler got)
@@ -25,7 +25,7 @@ def reparse(
     for i, page in enumerate(pages):
         soup = soup_from_response(page)
         try:
-            parsed = AMSGSMInfoPage(soup)
+            parsed = AMSBookInfoPage(soup)
         except Exception as e:
             print(f"{i} Caught {type(e).__name__}: '{e}'", file=stderr)
             print()

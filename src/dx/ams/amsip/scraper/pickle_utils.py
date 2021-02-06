@@ -1,26 +1,8 @@
 from ..store import dir_path as store_dir
-from pickle import dump, load
+from ....share.scraper.pickle_utils import retrieve_pickle, store_as_pickle
+from functools import partial
 
 __all__ = ["retrieve_pickle", "store_as_pickle"]
 
-def retrieve_pickle(pickle_filename, pickle_dir=None):
-    """
-    Retrieve a stored pickle, by default (if `pickle_dir` is `None`),
-    from the `scraper` directory's sibling `store` directory.
-    """
-    if pickle_dir is None:
-        pickle_dir = store_dir
-    with open(pickle_dir / pickle_filename, "rb") as pickle_file:
-        unpickled = load(pickle_file)
-    return unpickled
-
-def store_as_pickle(var_to_pickle, pickle_filename, pickle_dir=None):
-    """
-    Store a pickle, by default (if `pickle_dir` is `None`),
-    in the `scraper` directory's sibling `store` directory.
-    """
-    if pickle_dir is None:
-        pickle_dir = store_dir
-    with open(pickle_dir / pickle_filename, "wb") as pickle_file:
-        dump(var_to_pickle, pickle_file)
-    return
+retrieve_pickle = partial(retrieve_pickle, pickle_dir=store_dir)
+store_as_pickle = partial(store_as_pickle, pickle_dir=store_dir)

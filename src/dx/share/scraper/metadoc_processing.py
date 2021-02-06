@@ -107,7 +107,7 @@ class MetaDoc:
                 props_entry_dict = {p: [self_prop_val]}
             df_dict.update(props_entry_dict)
         if as_dict:
-            return df_dict # Used in recursive object flattening for AMSGSMInfoPage
+            return df_dict # Used in recursive object flattening for AMSBookInfoPage
         else:
             # Import late else it adds start lag to every module implementing _df_repr
             from pandas import DataFrame 

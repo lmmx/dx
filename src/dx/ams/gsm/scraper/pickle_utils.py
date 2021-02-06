@@ -1,5 +1,5 @@
 from ..store import dir_path as store_dir
-from ...share.scraper.pickle_utils import retrieve_pickle, store_as_pickle
+from ....share.scraper.pickle_utils import retrieve_pickle, store_as_pickle
 from functools import partial
 
 __all__ = ["retrieve_pickle", "store_as_pickle"]

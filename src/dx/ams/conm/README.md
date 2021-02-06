@@ -85,7 +85,7 @@ As well as more circumstantial info (with which to make a nice library-like inte
 ## Metadata storage
 
 The metadata (as well as some more details like ISBN) above [except for the ebook price which I
-decided I don't care about] is stored in a `AMSGSMInfoPage` object (see `soup_structure.py`).
+decided I don't care about] is stored in a `AMSBookInfoPage` object (see `soup_structure.py`).
 
 - The `content` attribute on this object stores a `ContentSection` object, which now has only a single property:
   - `cover_image` which is a string, the URL suffix at _https://bookstore.ams.org_ of the cover image JPG file
@@ -152,7 +152,7 @@ from dx.ams.conm.scraper.reparser import responses_and_parsed
 ```py
 >>> pages, parsed_pages = responses_and_parsed()
 >>> parsed_pages[0]
-<dx.ams.conm.scraper.soup_structure.AMSGSMInfoPage object at 0x7f6635203c10>
+<dx.ams.conm.scraper.soup_structure.AMSBookInfoPage object at 0x7f6635203c10>
 >>>
 ```
 
@@ -169,7 +169,7 @@ from dx.ams.conm.scraper.reparser import reparse; pages, parsed_pages, reparsed_
 
 Which gives a Python session with the `reparsed_pages` available to work with.
 
-Given such a list of parsed pages (i.e. a list of `AMSGSMInfoPage` objects), calling `pandas.concat` on
+Given such a list of parsed pages (i.e. a list of `AMSBookInfoPage` objects), calling `pandas.concat` on
 the `map` of the `_df_repr` over each in the list gives a single DataFrame with `NaN` values
 for the missing properties unless where this absence is explicitly specified (e.g. some books in the
 series don't have a table of contents so `toc_info` is `None`).

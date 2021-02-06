@@ -1,4 +1,4 @@
-from ...share.scraper.reparser import reparse
+from ....share.scraper.reparser import reparse
 from .pickle_utils import retrieve_pickle, store_as_pickle
 from functools import partial
 
