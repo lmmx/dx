@@ -1,5 +1,4 @@
 from .plot_options import default_kwargs
-from ..share import batch_multiprocess
 from .plot_cropper import crop_image
 from ..dataset import (
     abstracts,
@@ -15,9 +14,6 @@ from ..dataset import (
 )
 
 from pathlib import Path
-from functools import partial
-from random import random
-from time import time
 from random import shuffle
 import matplotlib.pyplot as plt
 

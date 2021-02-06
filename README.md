@@ -58,13 +58,15 @@ Each of the following has involved doing a grid search over the value to use for
 (i.e. what top percentage of most common words to exclude in preprocessing), after which the
 results can be explored by reviewing the output images.
 
-- Model all text in the abstract for each book from `dx.dataset.abstracts`
+- `dx.lda.plot_abstracts`: Model all text in the abstract for each book
   - This is more effective at removing all 'stopwords'
-- Model all text in the abstract for each book, one subject area at a time, from `dx.dataset.abstracts_by_subject`
-  - This is more insightful as to the variation within a particular sub-field (and avoids the topic
-    model simply recovering an approximation to these 10 subject areas).
-- Model all text in the table of contents for each book from `dx.dataset.toc`
-- Model all text in the table of contents for each book, one subject area at a time, from `dx.dataset.toc_by_subject`
+- `dx.lda.plot_abstracts_by_subject`: Model all text in the abstract for each book, one subject area at a time
+  - This is more insightful as to the variation within a particular sub-field
+- `dx.lda.plot_tocs`: Model all chapter/section titles for each book
+- `dx.lda.plot_tocs_by_subject`: Model all chapter/section titles for each book, one subject area at a time
+
+Doing this is computationally expensive, so multiprocessing is used to run on all available cores (permitting
+parallel calculation of each LDA model with a dedicated process at 100% per core).
 
 ## Limitations
 
@@ -174,3 +176,6 @@ love" than I'm currently willing to do!
 If you make a change to the parser, run `dx.dataset.reparse_all_series()` to check it's working as expected,
 and `dx.dataset.reparse_all_series(overwrite_pickles=True)` to overwrite them. Alternatively, just overwrite
 after backing up your pickles (a simple shell script `back_up_pickles.sh` is included to do so).
+
+- Batched multiprocessing on all cores is used to speed up reparsing, as for LDA computation (see
+  above)
