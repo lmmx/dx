@@ -156,6 +156,15 @@ With only a few omitted due to technicalities, the total dataset size is current
 (so approaches the 2000 title mark, a reasonable size, and about an order of magnitude larger than
 the initial dataset!)
 
+## Reparsing
+
+If you make a change to the parser, run `dx.dataset.reparse_all_series()` to check it's working as expected,
+and `dx.dataset.reparse_all_series(overwrite_pickles=True)` to overwrite them. Alternatively, just overwrite
+after backing up your pickles (a simple shell script `back_up_pickles.sh` is included to do so).
+
+- Batched multiprocessing on all cores is used to speed up reparsing, as for LDA computation (see
+  above)
+
 ## Extension to MSC
 
 The AMS website includes topics from the Mathematical Subject Classification (MSC) which would be
@@ -170,12 +179,3 @@ Additionally, I'd really like to see the indexes added as the 'documents' for to
 This would probably require further preprocessing (but in many cases it's available from images
 and this can be OCR'd reasonably well with `tesseract`). That might come more under "labour of
 love" than I'm currently willing to do!
-
-## Reparsing
-
-If you make a change to the parser, run `dx.dataset.reparse_all_series()` to check it's working as expected,
-and `dx.dataset.reparse_all_series(overwrite_pickles=True)` to overwrite them. Alternatively, just overwrite
-after backing up your pickles (a simple shell script `back_up_pickles.sh` is included to do so).
-
-- Batched multiprocessing on all cores is used to speed up reparsing, as for LDA computation (see
-  above)
