@@ -1,5 +1,6 @@
 from .plot_options import default_kwargs
 from .plot_cropper import crop_image
+from .stopword_utils import StopWords
 from ..dataset import (
     abstracts,
     readerships,
@@ -13,6 +14,7 @@ from ..dataset import (
     tocs_by_subject,
 )
 
+import warnings
 from pathlib import Path
 from random import shuffle
 import matplotlib.pyplot as plt
@@ -104,6 +106,7 @@ def plot_lda(
     n_top_words=20,
     min_df=2,
     max_df=0.6,
+    stop_words=StopWords["ALL"].value,
     save=True,
     save_subpath=".",
 ):
@@ -117,9 +120,11 @@ def plot_lda(
 
     # Use tf (raw term count) features for LDA.
     tf_vectorizer = CountVectorizer(
-        max_df=max_df, min_df=min_df, max_features=max_features, stop_words="english"
+        max_df=max_df, min_df=min_df, max_features=max_features, stop_words=stop_words
     )
-    tf = tf_vectorizer.fit_transform(data_samples)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message=".*stop_words", category=UserWarning, append=False)
+        tf = tf_vectorizer.fit_transform(data_samples)
     lda = LatentDirichletAllocation(
         n_components=n_components,
         max_iter=20,

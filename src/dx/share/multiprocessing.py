@@ -21,3 +21,11 @@ def batch_multiprocess(function_list, n_cores=mp.cpu_count(), show_progress=True
             p.start()
         for p in procs:
             p.join()
+
+def _batch_multiprocess(function_list, n_cores=mp.cpu_count(), show_progress=True):
+    """
+    Dummy sequential version of `batch_multiprocess` to be swapped in
+    when there's an error to debug in that
+    """
+    for func in function_list:
+        func()

@@ -16,6 +16,7 @@ __all__ = [
     "plot_tocs_by_subject",
     "plot_tocs",
     "plot_dataset",
+    "make_all_plots",
 ]
 
 
@@ -110,18 +111,39 @@ def plot_dataset(
     if dataset not in dataset_options:
         raise NameError(f"{dataset=} is not one of {dataset_options=}")
     dir_type = f"{dataset}{'_by_subject' if by_subject else ''}"
-    save_subpath = Path(f"{save_subpath_prefix}{dir_type}{save_subpath_suffix}")
     if dataset == "abstracts":
         data = abstracts_by_subject if by_subject else abstracts
     elif dataset == "tocs":
         if by_subject:
-            data = {subject: tocs_as_docs(tocs) for k,v in tocs_by_subject.items()}
+            data = {s: tocs_as_docs(t) for s, t in tocs_by_subject.items()}
         else:
             data = tocs_as_docs(tocs)
-    make_plots(
-        data=data,
+    _make_plots = partial(
+        make_plots,
         start_k=start_k,
         stop_k=stop_k,
         max_repeats=max_repeats,
-        save_subpath=save_subpath,
     )
+    save_subpath = Path(f"{save_subpath_prefix}{dir_type}{save_subpath_suffix}")
+    if by_subject:
+        for subj, subj_data in data.items():
+            _make_plots(data=subj_data, save_subpath=(save_subpath / subj))
+    else:
+        _make_plots(data=data, save_subpath=save_subpath)
+
+
+def make_all_plots(
+    start_k=default_kwargs["start_k"],
+    stop_k=default_kwargs["stop_k"],
+    max_repeats=default_kwargs["max_repeats"],
+    save_subpath_prefix=default_kwargs["save_subpath_prefix"],
+    save_subpath_suffix=default_kwargs["save_subpath_suffix"],
+):
+    ns = locals()
+    for plot_func in (
+        plot_abstracts,
+        plot_abstracts_by_subject,
+        plot_tocs_by_subject,
+        plot_tocs,
+    ):
+        plot_func(**{k: ns[k] for k in default_kwargs})
