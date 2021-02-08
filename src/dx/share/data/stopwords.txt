@@ -3,6 +3,7 @@ exercises
 lecture
 notes
 sub
+sup
 conclusion
 introduction
 references
